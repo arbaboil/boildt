@@ -25,3 +25,5 @@ type: project
 **Why:** owner asked for a highest-quality replica of Argus (BTC) / Sable (gold) for oil. Ship-gate discipline is non-negotiable.
 
 **How to apply:** next session, review the running GA v2 result. If GA converges to a stable ≥ 4-active-fold, positive-worst-fold-Calmar genome, re-run walk-forward on the tuned VoteConfig. Otherwise iterate on features (add EIA weekly surprise, add regime labels, add refinery-util). Do NOT ship until 7/10 K-fold gate and ≥4-week shadow are both green.
+
+**Session-1 end state (2026-09-18 21:03 UTC).** Two commits on `main` (16cb2cb + 3823ac0). No remote yet — Owner to create GitHub repo. Working tree clean. 33 tests green. GA v2 done + validated + committed. Nothing ship-ready. Bot v2 passes 5/6 statistical gates including 10/10 K-fold, fails WR ≥50% gate (asymmetric R:R). Next-session TODO in `docs/LAB-NOTEBOOK.md`.
