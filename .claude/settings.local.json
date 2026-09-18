@@ -14,7 +14,10 @@
       "Bash(tee /tmp/evolve_v2.log)",
       "Bash(tasklist)",
       "Bash(git add *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(git commit -m ' *)",
+      "Bash(tasklist /fi \"imagename eq python.exe\")",
+      "Bash(tasklist //fi \"imagename eq python.exe\")"
     ]
   }
 }
