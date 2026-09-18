@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://faractionradar.com/helios/schemas/daily-brief.schema.json",
+  "title": "HELIOS Daily Brief",
+  "description": "Daily oil intelligence brief. Typically shadow_only unless daily bar clears the same gates as weekly.",
+  "type": "object",
+  "required": ["as_of", "instrument", "read", "confidence", "shadow_only",
+               "helios_version"],
+  "properties": {
+    "as_of": {"type": "string", "format": "date"},
+    "instrument": {"type": "string", "enum": ["WTI", "BRENT"]},
+    "read": {"type": "string",
+             "enum": ["STRONG_SELL", "SELL", "FLAT", "BUY", "STRONG_BUY"]},
+    "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "reason_code": {"type": "string"},
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "shadow_only": {"type": "boolean"},
+    "helios_version": {"type": "string"}
+  }
+}

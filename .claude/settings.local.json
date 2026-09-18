@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(python *)",
+      "Bash(curl -sI \"https://stooq.com/q/d/l/?s=cl.f&i=d\")",
+      "Bash(curl -sI \"https://stooq.com/q/d/l/?s=cl.c&i=d\")",
+      "Bash(curl -s \"https://stooq.com/q/d/l/?s=cl.c&i=d\")",
+      "Bash(curl -s \"https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24limit=3&%24where=market_and_exchange_names%3D%27CRUDE%20OIL%2C%20LIGHT%20SWEET-NYMEX%27\")",
+      "Bash(curl -s \"https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24limit=1\")",
+      "Bash(curl -s \"https://publicreporting.cftc.gov/resource/72hh-3qpy.json?%24select=distinct%20market_and_exchange_names&%24limit=200\")",
+      "Bash(tee /tmp/evolve_v1.log)",
+      "Bash(tee /tmp/evolve_v2.log)",
+      "Bash(tasklist)",
+      "Bash(git add *)",
+      "Bash(git rm *)"
+    ]
+  }
+}

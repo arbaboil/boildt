@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://faractionradar.com/helios/schemas/weekly-call.schema.json",
+  "title": "HELIOS Weekly Call",
+  "description": "Weekly oil intelligence read published each Sunday 22:00 UTC.",
+  "type": "object",
+  "required": ["as_of", "instrument", "read", "confidence", "levels",
+               "votes", "shadow_only", "helios_version"],
+  "properties": {
+    "as_of": {"type": "string", "format": "date"},
+    "instrument": {"type": "string", "enum": ["WTI", "BRENT"]},
+    "read": {"type": "string",
+             "enum": ["STRONG_SELL", "SELL", "FLAT", "BUY", "STRONG_BUY"]},
+    "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "score": {"type": "number"},
+    "coverage": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "levels": {
+      "type": "object",
+      "required": ["ref", "atr20", "atr_k_stop", "atr_k_target"],
+      "properties": {
+        "ref": {"type": ["number", "null"]},
+        "invalidation": {"type": ["number", "null"]},
+        "target": {"type": ["number", "null"]},
+        "atr20": {"type": ["number", "null"]},
+        "atr_k_stop": {"type": "number"},
+        "atr_k_target": {"type": "number"}
+      }
+    },
+    "votes": {
+      "type": "object",
+      "properties": {
+        "trend": {"type": "integer", "enum": [-1, 0, 1]},
+        "momentum": {"type": "integer", "enum": [-1, 0, 1]},
+        "vol": {"type": "integer", "enum": [-1, 0, 1]},
+        "curve": {"type": "integer", "enum": [-1, 0, 1]},
+        "cot": {"type": "integer", "enum": [-1, 0, 1]},
+        "eia": {"type": "integer", "enum": [-1, 0, 1]},
+        "macro": {"type": "integer", "enum": [-1, 0, 1]}
+      }
+    },
+    "shadow_only": {"type": "boolean"},
+    "helios_version": {"type": "string"}
+  }
+}

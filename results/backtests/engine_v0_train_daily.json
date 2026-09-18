@@ -1,0 +1,46 @@
+{
+  "engine": "v0",
+  "tag": "train",
+  "cadence": "daily",
+  "start": "2001-01-01 00:00:00+00:00",
+  "end": "2018-12-31 00:00:00+00:00",
+  "metrics": {
+    "n_trades": 186,
+    "n_directional": 186,
+    "n_flat": 2345,
+    "flat_rate": 0.4993611584327087,
+    "directional_wr": 0.43010752688172044,
+    "mean_r_net": 0.2253754342020399,
+    "median_r_net": -1.0361767278914558,
+    "total_r_net": 41.91983076157942,
+    "max_dd_r": 14.008454943267886,
+    "sharpe_per_trade": 0.5857930976585635,
+    "sortino_per_trade": 8.415214694326696,
+    "calmar_r": 2.99246640199425,
+    "long_wr": 0.4074074074074074,
+    "short_wr": 0.46153846153846156,
+    "n_long": 108,
+    "n_short": 78,
+    "n_target": 77,
+    "n_stop": 104,
+    "n_time": 5
+  },
+  "bootstrap_sharpe": {
+    "mean": 0.5824368647281732,
+    "ci_low": -0.0052472296800330775,
+    "ci_high": 1.167254730345361,
+    "n_boot": 5000,
+    "block_size": 5
+  },
+  "bootstrap_expectancy": {
+    "mean": 0.2247121614069656,
+    "ci_low": -0.001954760851493643,
+    "ci_high": 0.4553447964523181
+  },
+  "permutation": {
+    "p_value": 0.022,
+    "observed_mean": 0.2253754342020399,
+    "n_perm": 1000
+  },
+  "seed": 42
+}

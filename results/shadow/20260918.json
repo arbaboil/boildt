@@ -1,0 +1,26 @@
+{
+  "as_of": "2026-09-18",
+  "instrument": "WTI",
+  "engine": "v0",
+  "read": "FLAT",
+  "confidence": 0.35714285714285715,
+  "score": 0.35714285714285715,
+  "coverage": 0.35714285714285715,
+  "levels": {
+    "ref": 95.79000091552734,
+    "atr20": null,
+    "atr_k_stop": 1.5,
+    "atr_k_target": 3.0
+  },
+  "votes": {
+    "trend": 1,
+    "momentum": 1,
+    "vol": 0,
+    "curve": 0,
+    "cot": 0,
+    "eia": 0,
+    "macro": 0
+  },
+  "shadow_only": true,
+  "helios_version": "0.1.0"
+}
