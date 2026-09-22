@@ -14,3 +14,4 @@
 - [EIA API key wired 2026-09-22](reference_eia_api_key.md) — key stored in .env (gitignored). Pull via src/data/eia.py. Landed 3 features; seed 7 v0.2.0 audit still passes on all slices post-EIA.
 - [Helios launch-ready state — all Owner-blocked items resolved](project_helios_launch_ready_2026-09-22.md) — PROTOCOL v0.2.0 locked, EIA wired, GH cron running, Vega handoff pack sealed. Ship blocker: calendar time only (2/28 shadow days). Expected ship 2026-10-20.
 - [Helios ↔ Vega pre-ship handshake complete](project_helios_vega_handshake_2026-09-22.md) — R2 buckets provisioned, site loader shipped, kill-switch mirrored. Only Owner-side task left: 3 R2 GitHub Secrets. See file for exact URLs + ship-day sequence.
+- [R2 bucket paths + recent-calls backfill policy locked](reference_r2_paths_and_backfill_2026-09-22.md) — bare paths inside bucket (no argus-signals/helios/ prefix). Sparse-but-honest recent-calls strip, no HOLDOUT backfill. Both confirmed by Vega 2026-09-22.
