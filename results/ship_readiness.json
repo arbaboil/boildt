@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-22T13:21:07+00:00",
+  "generated_at_utc": "2026-09-22T13:55:52+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v020": true,
@@ -34,18 +34,18 @@
   },
   "gate_2b_payoff_adjusted": {
     "TRAIN": {
-      "wr": 0.37815126050420167,
-      "mean_r_net": 1.1427731862099852,
+      "wr": 0.39316239316239315,
+      "mean_r_net": 1.292583569148796,
       "gate_2b_pass": true
     },
     "VALIDATION": {
-      "wr": 0.3258426966292135,
-      "mean_r_net": 0.8815068375413462,
+      "wr": 0.3473684210526316,
+      "mean_r_net": 0.918234088394138,
       "gate_2b_pass": true
     },
     "HOLDOUT": {
-      "wr": 0.3620689655172414,
-      "mean_r_net": 0.9732529125783472,
+      "wr": 0.3148148148148148,
+      "mean_r_net": 0.7342712383030919,
       "gate_2b_pass": true
     }
   },
@@ -195,10 +195,10 @@
     }
   },
   "sources": {
-    "audit": "results\\bots\\bot_v3_seed7_candidate_audit.json",
-    "cost_stress": "results\\bots\\bot_v3_seed7_candidate_cost_stress.json",
-    "drift": "results\\bots\\bot_v3_seed7_candidate_holdout_drift.json",
-    "ablation": "results\\bots\\bot_v3_seed7_candidate_ablation.json",
-    "monte_carlo": "results\\monte_carlo\\bot_v3_seed7_candidate_mc.json"
+    "audit": "results/bots/bot_v3_seed7_candidate_audit.json",
+    "cost_stress": "results/bots/bot_v3_seed7_candidate_cost_stress.json",
+    "drift": "results/bots/bot_v3_seed7_candidate_holdout_drift.json",
+    "ablation": "results/bots/bot_v3_seed7_candidate_ablation.json",
+    "monte_carlo": "results/monte_carlo/bot_v3_seed7_candidate_mc.json"
   }
 }
