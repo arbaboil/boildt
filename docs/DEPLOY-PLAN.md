@@ -1,7 +1,26 @@
 # HELIOS — Deploy plan + kill-switch spec
 
-Version: 0.1.0-draft
+Version: 0.2.0 (locked 2026-09-22; bumped when R2 buckets provisioned)
 Owner: FAR Owner (kill-switch access) + Vega (deploy operator)
+
+## R2 target (LIVE, provisioned by Vega 2026-09-22)
+
+| Env | Bucket name | Public dev URL |
+|---|---|---|
+| staging | `helios-data-staging` | `https://pub-021e64832d994b38ade41c3a9f3ba7f2.r2.dev` |
+| prod | `helios-data-prod` | `https://pub-b3a50879eef9424bae993b9cce189451.r2.dev` |
+
+Site loader reads via `NEXT_PUBLIC_HELIOS_TARGET` env var (`"staging"`
+or `"prod"`). Default: staging. Owner flips to prod on ship day
+(2026-10-20). HELIOS uploads to `helios-data-staging` on every daily
+cron run; the same artifacts get promoted to `helios-data-prod` on
+ship day via a manual `wrangler r2 object cp` (or a "promote" flag
+in the cron — see workflow file).
+
+**Upload auth (GitHub Secrets, added by Owner):**
+- `R2_ACCOUNT_ID` — Cloudflare account ID
+- `R2_ACCESS_KEY_ID` — R2 API token access key with write scope to both buckets
+- `R2_SECRET_ACCESS_KEY` — R2 API token secret
 
 ## Ship prerequisites
 
