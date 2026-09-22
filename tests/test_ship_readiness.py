@@ -36,13 +36,13 @@ def test_fmt_bool_returns_pass_fail():
 
 def test_audit_row_extracts_all_gates():
     audit = {
-        "strict_v010_pass": False,
-        "proposed_v020_pass": True,
+        "strict_v020_pass": True,
+        "strict_v010_pass_retired": False,
         "gates": {
-            "TRAIN": {"g1_sharpe_ci_pos": True, "g2_wr_ge_50": False,
+            "TRAIN": {"g1_sharpe_ci_pos": True, "g2_wr_ge_50_retired": False,
                       "g3_n_ge_100": True, "g5_maxdd_le_15r": True,
                       "g6_perm_p_le_005": True},
-            "VALIDATION": {"g1_sharpe_ci_pos": True, "g2_wr_ge_50": False,
+            "VALIDATION": {"g1_sharpe_ci_pos": True, "g2_wr_ge_50_retired": False,
                             "g5_maxdd_le_15r": True, "g6_perm_p_le_005": True},
             "HOLDOUT": {"g1_sharpe_ci_pos": True, "g5_maxdd_le_15r": True,
                         "g6_perm_p_le_005": True},
@@ -54,8 +54,8 @@ def test_audit_row_extracts_all_gates():
     assert row["TRAIN_g1_sharpe_ci_pos"] is True
     assert row["TRAIN_g2_wr_ge_50"] is False
     assert row["g4_wf_7of10"] is True
-    assert row["strict_v010_pass"] is False
-    assert row["proposed_v020_pass"] is True
+    assert row["strict_v020_pass"] is True
+    assert row["strict_v010_pass_retired"] is False
 
 
 def test_payoff_adjusted_invariant_uses_mean_r_net():
@@ -124,20 +124,22 @@ def test_cost_stress_flags_negative_slice():
 
 
 def test_verdict_green_light_only_when_no_blocking():
-    audit_row = {"strict_v010_pass": False, "proposed_v020_pass": True}
+    # v0.2.0 canonical. protocol_signed arg ignored post-v0.2.0 lock.
+    audit_row = {"strict_v020_pass": True, "strict_v010_pass_retired": False}
     drift = {"status": "present"}
     cost = {"status": "present", "all_positive_all_slices": True}
     mc = {"status": "present", "prob_ruin": 0.0}
     shadow_ok = {"n_days": 30}
     shadow_short = {"n_days": 10}
 
-    # Unsigned + short shadow → not green
+    # Short shadow → not green
     v = sr._readiness_verdict(audit_row, drift, cost, mc, shadow_short,
-                                protocol_signed=False)
+                                protocol_signed=True)
     assert v["ready_v020"] is True
     assert v["green_light"] is False
+    assert any("Gate 7 shadow" in r for r in v["blocking_reasons"])
 
-    # Signed + long shadow → green
+    # Long shadow → green
     v = sr._readiness_verdict(audit_row, drift, cost, mc, shadow_ok,
                                 protocol_signed=True)
     assert v["green_light"] is True
@@ -145,7 +147,7 @@ def test_verdict_green_light_only_when_no_blocking():
 
 
 def test_verdict_flags_high_ruin_prob():
-    audit_row = {"strict_v010_pass": True, "proposed_v020_pass": True}
+    audit_row = {"strict_v020_pass": True, "strict_v010_pass_retired": True}
     drift = {"status": "present"}
     cost = {"status": "present", "all_positive_all_slices": True}
     mc = {"status": "present", "prob_ruin": 0.05}  # 5% ruin

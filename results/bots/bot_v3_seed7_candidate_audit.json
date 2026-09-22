@@ -341,21 +341,27 @@
   "gates": {
     "TRAIN": {
       "g1_sharpe_ci_pos": true,
-      "g2_wr_ge_50": false,
+      "g2a_expectancy_ci_pos": true,
+      "g2b_payoff_adjusted_wr": true,
+      "g2_wr_ge_50_retired": false,
       "g3_n_ge_100": true,
       "g5_maxdd_le_15r": true,
       "g6_perm_p_le_005": true
     },
     "VALIDATION": {
       "g1_sharpe_ci_pos": true,
-      "g2_wr_ge_50": false,
+      "g2a_expectancy_ci_pos": true,
+      "g2b_payoff_adjusted_wr": true,
+      "g2_wr_ge_50_retired": false,
       "g3_n_ge_100": false,
       "g5_maxdd_le_15r": true,
       "g6_perm_p_le_005": true
     },
     "HOLDOUT": {
       "g1_sharpe_ci_pos": true,
-      "g2_wr_ge_50": false,
+      "g2a_expectancy_ci_pos": true,
+      "g2b_payoff_adjusted_wr": true,
+      "g2_wr_ge_50_retired": false,
       "g3_n_ge_100": false,
       "g5_maxdd_le_15r": true,
       "g6_perm_p_le_005": true
@@ -363,6 +369,7 @@
     "g4_walkforward_7of10": true,
     "b6_regime_consistency": true
   },
-  "strict_v010_pass": false,
-  "proposed_v020_pass": true
+  "strict_v020_pass": true,
+  "strict_v010_pass_retired": false,
+  "protocol_version": "0.2.0"
 }

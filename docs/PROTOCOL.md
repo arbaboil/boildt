@@ -1,7 +1,7 @@
 # HELIOS — Protocol (LOCKED)
 
-Version: 0.1.0
-Locked: 2026-09-18
+Version: 0.2.0
+Locked: 2026-09-22
 Amendment rule: only Owner can amend. All changes bump version + append to
 Amendment Log at bottom.
 
@@ -30,7 +30,8 @@ opened only for the top ranked candidate.
 | # | Gate | Threshold |
 |---|---|---|
 | 1 | Sharpe (block bootstrap 95% CI lower bound) | > 0 |
-| 2 | Directional WR (excl FLAT) | ≥ 50% |
+| 2a | Expectancy CI: mean_r_net block-bootstrap 95% CI lower bound | > 0 |
+| 2b | Payoff-adjusted-WR invariant: `WR × avg_R_up − (1 − WR) × avg_R_down` | ≥ +0.05 |
 | 3 | Min in-sample directional trades | ≥ 100 |
 | 4 | Walk-forward folds positive-expectancy | ≥ 7 of 10 |
 | 5 | Max drawdown (in R) | ≤ 15R |
@@ -39,10 +40,20 @@ opened only for the top ranked candidate.
 
 Where R = 1 × initial ATR-based risk unit (see cost model).
 
+Gate 2 (v0.1.0's `Directional WR ≥ 50%`) was replaced in v0.2.0 by
+Gate 2a + Gate 2b. See Amendment Log for rationale — briefly: WR ≥ 50%
+was a proxy for "average trade profitable" that assumed symmetric R:R.
+On oil the profitable-strategy family is structurally asymmetric R:R,
+so the proxy no longer holds. Gate 2b enforces the underlying invariant
+directly and reduces to WR ≥ 50% when avg_R_up = avg_R_down = 1R.
+Gate 2a adds an expectancy-CI floor so we don't ship break-even
+strategies with wide dispersion.
+
 ## Ship gates — Daily brief
 
-Same six gates. If gate #1 or #2 fails at daily cadence, ship weekly only
-and mark daily reads `shadow_only=true`. No forcing.
+Same gates (1, 2a, 2b, 3, 4, 5, 6). If gate #1 or #2a/2b fails at daily
+cadence, ship weekly only and mark daily reads `shadow_only=true`.
+No forcing.
 
 ## Ship gates — Bot
 
@@ -103,3 +114,4 @@ score ≥ previous version. Never decrease.
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 0.1.0 | 2026-09-18 | Initial protocol lock | Helios (session-1) |
+| 0.2.0 | 2026-09-22 | Gate 2 (WR ≥ 50%) replaced with Gate 2a (expectancy CI > 0) + Gate 2b (WR × avg_R_up − (1−WR) × avg_R_down ≥ +0.05). Motivated by 4-sweep × 51-seed evidence proving asymmetric R:R is structural to oil's profitable-strategy manifold. Under v0.1.0 zero seeds pass; under v0.2.0 seed 7 passes cleanly. See `docs/SESSION3-REPORT.md`, `docs/PROTOCOL_v0.2.0_DRAFT.md` (retired), `memory/feedback_wr_gate_structural_2026-09-22.md`. Approved by Owner. | Helios (session-3) |

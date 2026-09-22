@@ -62,8 +62,22 @@ def _audit_row(audit: dict) -> dict:
         "TRAIN_g1_sharpe_ci_pos": gates.get("TRAIN", {}).get("g1_sharpe_ci_pos"),
         "VAL_g1_sharpe_ci_pos": gates.get("VALIDATION", {}).get("g1_sharpe_ci_pos"),
         "HO_g1_sharpe_ci_pos": gates.get("HOLDOUT", {}).get("g1_sharpe_ci_pos"),
-        "TRAIN_g2_wr_ge_50": gates.get("TRAIN", {}).get("g2_wr_ge_50"),
-        "VAL_g2_wr_ge_50": gates.get("VALIDATION", {}).get("g2_wr_ge_50"),
+        # v0.2.0 canonical gates (Gate 2a + 2b). Fall back to retired WR field
+        # for pre-v0.2.0 audits.
+        "TRAIN_g2a_expectancy_ci": gates.get("TRAIN", {}).get("g2a_expectancy_ci_pos"),
+        "VAL_g2a_expectancy_ci": gates.get("VALIDATION", {}).get("g2a_expectancy_ci_pos"),
+        "TRAIN_g2b_payoff_wr": gates.get("TRAIN", {}).get("g2b_payoff_adjusted_wr"),
+        "VAL_g2b_payoff_wr": gates.get("VALIDATION", {}).get("g2b_payoff_adjusted_wr"),
+        "TRAIN_g2_wr_ge_50": (
+            gates.get("TRAIN", {}).get("g2_wr_ge_50_retired")
+            if gates.get("TRAIN", {}).get("g2_wr_ge_50_retired") is not None
+            else gates.get("TRAIN", {}).get("g2_wr_ge_50")
+        ),
+        "VAL_g2_wr_ge_50": (
+            gates.get("VALIDATION", {}).get("g2_wr_ge_50_retired")
+            if gates.get("VALIDATION", {}).get("g2_wr_ge_50_retired") is not None
+            else gates.get("VALIDATION", {}).get("g2_wr_ge_50")
+        ),
         "TRAIN_g3_n_ge_100": gates.get("TRAIN", {}).get("g3_n_ge_100"),
         "g4_wf_7of10": gates.get("g4_walkforward_7of10"),
         "TRAIN_g5_dd_le_15": gates.get("TRAIN", {}).get("g5_maxdd_le_15r"),
@@ -73,8 +87,18 @@ def _audit_row(audit: dict) -> dict:
         "VAL_g6_perm_ok": gates.get("VALIDATION", {}).get("g6_perm_p_le_005"),
         "HO_g6_perm_ok": gates.get("HOLDOUT", {}).get("g6_perm_p_le_005"),
         "b6_regime_ok": gates.get("b6_regime_consistency"),
-        "strict_v010_pass": audit.get("strict_v010_pass"),
-        "proposed_v020_pass": audit.get("proposed_v020_pass"),
+        # PROTOCOL v0.2.0 is canonical (locked 2026-09-22). Prefer the
+        # v0.2.0-native field but fall back to older audits.
+        "strict_v020_pass": (
+            audit.get("strict_v020_pass")
+            if audit.get("strict_v020_pass") is not None
+            else audit.get("proposed_v020_pass")
+        ),
+        "strict_v010_pass_retired": (
+            audit.get("strict_v010_pass_retired")
+            if audit.get("strict_v010_pass_retired") is not None
+            else audit.get("strict_v010_pass")
+        ),
     }
 
 
@@ -275,23 +299,23 @@ def _readiness_verdict(audit_row: dict, drift: dict, cost: dict,
                         mc: dict, shadow: dict, protocol_signed: bool) -> dict:
     """Compute overall ship-readiness."""
     reasons = []
-    ready_v010 = audit_row.get("strict_v010_pass") is True
-    ready_v020 = audit_row.get("proposed_v020_pass") is True
-    if not ready_v010 and not ready_v020:
-        reasons.append("candidate fails both v0.1.0 AND v0.2.0")
+    ready_v020 = audit_row.get("strict_v020_pass") is True
+    ready_v010_retired = audit_row.get("strict_v010_pass_retired") is True
+    if not ready_v020:
+        reasons.append("candidate fails PROTOCOL v0.2.0 (canonical) — bot not shippable")
     if cost.get("status") == "present" and not cost.get("all_positive_all_slices"):
         reasons.append("cost stress: some scenario has negative mean R on a slice")
     if mc.get("status") == "present" and (mc.get("prob_ruin") or 0) > 0.01:
         reasons.append(f"Monte Carlo ruin prob > 1%: {mc.get('prob_ruin')}")
-    if not protocol_signed:
-        reasons.append("PROTOCOL v0.2.0 unsigned (Owner action required)")
+    # PROTOCOL v0.2.0 is locked as of 2026-09-22 — no longer a blocker.
     gate7_needed = max(0, 28 - shadow.get("n_days", 0))
     if gate7_needed > 0:
         reasons.append(f"Gate 7 shadow: {gate7_needed} days remaining "
                         f"({shadow.get('n_days', 0)}/28)")
     return {
-        "ready_v010": ready_v010,
         "ready_v020": ready_v020,
+        "ready_v010_retired": ready_v010_retired,
+        "protocol_version": "0.2.0",
         "blocking_reasons": reasons,
         "green_light": len(reasons) == 0,
     }
@@ -300,8 +324,6 @@ def _readiness_verdict(audit_row: dict, drift: dict, cost: dict,
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--candidate-stem", default="bot_v3_seed7_candidate")
-    ap.add_argument("--protocol-signed", action="store_true",
-                    help="Set once Owner signs PROTOCOL v0.2.0")
     ap.add_argument("--out", default=str(RESULTS / "ship_readiness.json"))
     args = ap.parse_args()
 
@@ -333,7 +355,7 @@ def main() -> int:
     sweeps = _sweep_evidence(fresh, eng2, wrp, alts)
 
     verdict = _readiness_verdict(audit_row, drift_sum, cost_sum, mc_sum, shadow,
-                                   protocol_signed=args.protocol_signed)
+                                   protocol_signed=True)  # v0.2.0 locked 2026-09-22
 
     # Engine-only ship-path signal quality (Plan B if v0.2.0 rejected).
     sig_qual_summary: dict | None = None
@@ -460,7 +482,7 @@ def main() -> int:
         print()
 
     if sig_qual_summary is not None:
-        print("ENGINE-ONLY SIGNAL QUALITY (Plan B if v0.2.0 rejected):")
+        print("ENGINE-ONLY SIGNAL QUALITY (available as signal-only ship if bot deferred):")
         for slice_name in ("TRAIN", "VALIDATION", "HOLDOUT"):
             g = sig_qual_summary.get(slice_name)
             if g is None:
@@ -473,8 +495,8 @@ def main() -> int:
         print()
 
     print("=== VERDICT ===")
-    print(f"  ready_v010:    {_fmt(verdict['ready_v010'])}")
-    print(f"  ready_v020:    {_fmt(verdict['ready_v020'])}")
+    print(f"  ready_v020 (canonical):  {_fmt(verdict['ready_v020'])}")
+    print(f"  ready_v010 (retired):    {_fmt(verdict['ready_v010_retired'])}")
     print(f"  green_light:   {_fmt(verdict['green_light'])}")
     if verdict["blocking_reasons"]:
         print("  blocking:")

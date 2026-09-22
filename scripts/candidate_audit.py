@@ -1,16 +1,22 @@
-"""Full audit of a bot candidate against every PROTOCOL gate.
+"""Full audit of a bot candidate against every PROTOCOL v0.2.0 gate.
 
 Reads a candidate JSON (produced by evolve_bot.py or hand-anointed from
 the fresh-seed sweep), rebuilds its VoteConfig + TradeConfig, and runs
 every gate check that Helios can automate:
 
   1. Sharpe CI > 0 on TRAIN + VAL + HOLDOUT (block bootstrap 5000 boots)
-  2. Directional WR ≥ 50% on TRAIN + VAL + HOLDOUT
+  2a. Expectancy CI-low > 0 on TRAIN + VAL (v0.2.0 replaces old Gate 2)
+  2b. Payoff-adjusted WR invariant (mean_r_net >= 0.05) on TRAIN + VAL
   3. Min 100 trades on TRAIN
   4. Walk-forward K=10 with ≥ 7 folds positive
   5. Max DD ≤ 15R on all three slices
   6. Permutation p-value ≤ 0.05 on all three slices (1000 shuffles)
   7. Shadow window: not checked here — separate operational gate
+
+v0.2.0 amendment (2026-09-22): Gate 2 (WR ≥ 50%) was retired based on
+51-seed evidence that asymmetric R:R is structural to oil's profitable
+manifold. Replaced with Gate 2a + Gate 2b. Old WR field still reported
+under `g2_wr_ge_50_retired` for continuity but not used in ship decisions.
 
 Writes `results/bots/<candidate>_audit.json` with the full report.
 
@@ -99,7 +105,15 @@ def _pass(rep: dict) -> dict:
     m = rep["metrics"]
     return {
         "g1_sharpe_ci_pos": bool(rep["bootstrap_sharpe"]["ci_low"] > 0),
-        "g2_wr_ge_50": bool(m["directional_wr"] >= 0.50),
+        # v0.2.0 Gate 2a: expectancy CI-low > 0
+        "g2a_expectancy_ci_pos": bool(rep["bootstrap_expectancy"]["ci_low"] > 0),
+        # v0.2.0 Gate 2b: WR*avg_R_up - (1-WR)*avg_R_down >= 0.05
+        # Algebraically identical to mean_r_net >= 0.05 (see docs/PROTOCOL.md).
+        "g2b_payoff_adjusted_wr": bool(m["mean_r_net"] >= 0.05),
+        # v0.1.0 Gate 2 (WR >= 50%) retained as informational — RETIRED as a
+        # ship gate per PROTOCOL v0.2.0 amendment (2026-09-22). Still reported
+        # for continuity in historical audits and dashboards.
+        "g2_wr_ge_50_retired": bool(m["directional_wr"] >= 0.50),
         "g3_n_ge_100": bool(m["n_trades"] >= 100),
         "g5_maxdd_le_15r": bool(m["max_dd_r"] <= 15.0),
         "g6_perm_p_le_005": bool(rep["permutation"]["p_value"] <= 0.05),
@@ -175,21 +189,26 @@ def main() -> int:
     )
     gates["b6_regime_consistency"] = bool(b6_pass)
 
-    # Roll-up: strict PROTOCOL v0.1.0
-    strict_pass = (
+    # Roll-up: strict PROTOCOL v0.2.0 (CANONICAL as of 2026-09-22)
+    strict_v020_pass = (
         gates["TRAIN"]["g1_sharpe_ci_pos"]
         and gates["VALIDATION"]["g1_sharpe_ci_pos"]
-        and gates["TRAIN"]["g2_wr_ge_50"]
-        and gates["VALIDATION"]["g2_wr_ge_50"]
+        and gates["TRAIN"]["g2a_expectancy_ci_pos"]
+        and gates["VALIDATION"]["g2a_expectancy_ci_pos"]
+        and gates["TRAIN"]["g2b_payoff_adjusted_wr"]
+        and gates["VALIDATION"]["g2b_payoff_adjusted_wr"]
         and gates["TRAIN"]["g3_n_ge_100"]
         and gates["TRAIN"]["g5_maxdd_le_15r"]
         and gates["VALIDATION"]["g5_maxdd_le_15r"]
         and gates["TRAIN"]["g6_perm_p_le_005"]
         and gates["g4_walkforward_7of10"]
     )
-    proposed_v020_pass = (
+    # Retained for historical continuity; not used for ship decisions.
+    strict_v010_pass_retired = (
         gates["TRAIN"]["g1_sharpe_ci_pos"]
         and gates["VALIDATION"]["g1_sharpe_ci_pos"]
+        and gates["TRAIN"]["g2_wr_ge_50_retired"]
+        and gates["VALIDATION"]["g2_wr_ge_50_retired"]
         and gates["TRAIN"]["g3_n_ge_100"]
         and gates["TRAIN"]["g5_maxdd_le_15r"]
         and gates["VALIDATION"]["g5_maxdd_le_15r"]
@@ -218,8 +237,9 @@ def main() -> int:
             ],
         },
         "gates": gates,
-        "strict_v010_pass": strict_pass,
-        "proposed_v020_pass": proposed_v020_pass,
+        "strict_v020_pass": strict_v020_pass,
+        "strict_v010_pass_retired": strict_v010_pass_retired,
+        "protocol_version": "0.2.0",
     }
 
     out_path = Path(args.out) if args.out else (
@@ -235,7 +255,8 @@ def main() -> int:
               f"R={m['mean_r_net']:+.2f} S={m['sharpe_per_trade']:+.2f} "
               f"CI=[{b['ci_low']:+.2f},{b['ci_high']:+.2f}] "
               f"DD={m['max_dd_r']:.1f}R  perm p={p['p_value']:.3f}  "
-              f"g1={g['g1_sharpe_ci_pos']} g2={g['g2_wr_ge_50']} "
+              f"g1={g['g1_sharpe_ci_pos']} g2a={g['g2a_expectancy_ci_pos']} "
+              f"g2b={g['g2b_payoff_adjusted_wr']} "
               f"g5={g['g5_maxdd_le_15r']} g6={g['g6_perm_p_le_005']}")
     print(f"WF: {wf['positive_expectancy_folds']}/10 positive-expectancy "
           f"({wf['positive_sharpe_folds']}/10 positive-Sharpe)  "
@@ -249,8 +270,8 @@ def main() -> int:
         print(f"  {r:6s}: n={c['n_trades']:3d}  mean R = {mr_s}")
     print(f"  b6 pass: {b6_pass}")
     print()
-    print(f"strict PROTOCOL v0.1.0 pass: {strict_pass}")
-    print(f"proposed PROTOCOL v0.2.0 pass (no WR gate): {proposed_v020_pass}")
+    print(f"strict PROTOCOL v0.2.0 pass (canonical): {strict_v020_pass}")
+    print(f"strict PROTOCOL v0.1.0 pass (RETIRED, informational only): {strict_v010_pass_retired}")
     print(f"\nWrote {out_path}")
     return 0
 

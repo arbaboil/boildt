@@ -1,6 +1,6 @@
-# HELIOS — Protocol Amendment v0.2.0 (DRAFT — awaiting Owner sign-off)
+# HELIOS — Protocol Amendment v0.2.0 (RETIRED — approved and merged into PROTOCOL.md on 2026-09-22)
 
-Status: **DRAFT — NOT YET IN FORCE**. Do not treat as authoritative.
+Status: **APPROVED by Owner 2026-09-22. This draft is kept for historical reference only. Canonical protocol lives in `docs/PROTOCOL.md` v0.2.0.**
 Version: 0.2.0-draft-1
 Author: Helios (2026-09-22)
 Depends on: memo `docs/memos/2026-09-22_WR_gate_asymmetric_RR.md`
