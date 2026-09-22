@@ -1,0 +1,306 @@
+{
+  "seed": 56,
+  "elapsed_s": 509.9,
+  "ga": {
+    "pop": 64,
+    "gens": 30,
+    "sigma": 0.12,
+    "elite": 4,
+    "folds": 5,
+    "best_fitness": 10.884564670204615,
+    "best_report": {
+      "fitness": 10.884564670204615,
+      "calmars": [
+        10.884564670204615,
+        14.804977427204397,
+        13.502333958111826,
+        12.020182011278715,
+        14.718205236969812
+      ],
+      "median_calmar": 13.502333958111826,
+      "mean_calmar": 13.186052660753873,
+      "fold_wr": [
+        0.36363636363636365,
+        0.36363636363636365,
+        0.4,
+        0.40816326530612246,
+        0.375
+      ],
+      "min_fold_wr": 0.36363636363636365,
+      "wr_shortfall": 0.0,
+      "n_trades": 255,
+      "total_r": 401.0114071245555,
+      "max_dd": 7.083228894072043,
+      "survived": true,
+      "n_folds": 5
+    }
+  },
+  "genome": {
+    "w_trend": 0.5043215158497204,
+    "w_momentum": 0.7898969722115269,
+    "w_vol": 1.231026010918807,
+    "w_curve": 2.739338365700066,
+    "w_cot": 0.7852543882333353,
+    "w_eia": 3.015318711767531,
+    "w_macro": 1.8502865680830307,
+    "trend_bull": 0.06626598069516837,
+    "trend_bear": -0.06909389889253217,
+    "momo_bull": 0.0426643557486636,
+    "momo_bear": -0.06612757393926297,
+    "cot_bull": -1.5607599101465635,
+    "cot_bear": 1.4507650836388053,
+    "curve_bull": 0.34380581951930506,
+    "curve_bear": -1.047731681471472,
+    "dxy_bear": 0.053223160561891414,
+    "dxy_bull": -0.05540599180727322,
+    "strong": 0.5344375949180323,
+    "moderate": 0.13857561787338776,
+    "min_coverage": 0.6561126143943568,
+    "k_stop": 0.75,
+    "k_target": 5.0,
+    "max_hold_days": 19.0
+  },
+  "slices": [
+    {
+      "slice": "TRAIN",
+      "start": "2006-01-01",
+      "end": "2018-12-31",
+      "metrics": {
+        "n_trades": 255,
+        "n_directional": 255,
+        "n_flat": 1346,
+        "flat_rate": 0.3969330580949572,
+        "directional_wr": 0.3803921568627451,
+        "mean_r_net": 1.5727330367135848,
+        "median_r_net": -1.0788690842040514,
+        "total_r_net": 401.0469243619641,
+        "max_dd_r": 7.0741458443662,
+        "sharpe_per_trade": 1.96741721207598,
+        "sortino_per_trade": 62.73477653187542,
+        "calmar_r": 56.69192199102809,
+        "long_wr": 0.38562091503267976,
+        "short_wr": 0.37254901960784315,
+        "n_long": 153,
+        "n_short": 102,
+        "n_target": 80,
+        "n_stop": 156,
+        "n_time": 19
+      },
+      "bootstrap_sharpe": {
+        "mean": 1.975392438355765,
+        "ci_low": 1.5524501804456992,
+        "ci_high": 2.4014152426573765,
+        "n_boot": 2000,
+        "block_size": 5
+      }
+    },
+    {
+      "slice": "VALIDATION",
+      "start": "2019-01-01",
+      "end": "2023-12-31",
+      "metrics": {
+        "n_trades": 103,
+        "n_directional": 103,
+        "n_flat": 458,
+        "flat_rate": 0.3512269938650307,
+        "directional_wr": 0.30097087378640774,
+        "mean_r_net": 1.1464886376498924,
+        "median_r_net": -1.0668651863668557,
+        "total_r_net": 118.08832967793892,
+        "max_dd_r": 18.21118250478075,
+        "sharpe_per_trade": 1.5218872452402683,
+        "sortino_per_trade": 183.5797033825992,
+        "calmar_r": 6.484385604665632,
+        "long_wr": 0.3384615384615385,
+        "short_wr": 0.23684210526315788,
+        "n_long": 65,
+        "n_short": 38,
+        "n_target": 28,
+        "n_stop": 72,
+        "n_time": 3
+      },
+      "bootstrap_sharpe": {
+        "mean": 1.5061519122093554,
+        "ci_low": 0.7274948019613733,
+        "ci_high": 2.3303603147098944,
+        "n_boot": 2000,
+        "block_size": 5
+      }
+    },
+    {
+      "slice": "HOLDOUT",
+      "start": "2024-01-01",
+      "end": "2026-09-22",
+      "metrics": {
+        "n_trades": 58,
+        "n_directional": 58,
+        "n_flat": 241,
+        "flat_rate": 0.33848314606741575,
+        "directional_wr": 0.1896551724137931,
+        "mean_r_net": 0.21799667882503324,
+        "median_r_net": -1.0902661987847044,
+        "total_r_net": 12.643807371851928,
+        "max_dd_r": 18.725196997808066,
+        "sharpe_per_trade": 0.36327735289153423,
+        "sortino_per_trade": 40.80957837569298,
+        "calmar_r": 0.6752296049719523,
+        "long_wr": 0.14705882352941177,
+        "short_wr": 0.25,
+        "n_long": 34,
+        "n_short": 24,
+        "n_target": 8,
+        "n_stop": 47,
+        "n_time": 3
+      },
+      "bootstrap_sharpe": {
+        "mean": 0.2911905781685266,
+        "ci_low": -1.0253911354664367,
+        "ci_high": 1.3289320752448672,
+        "n_boot": 2000,
+        "block_size": 5
+      }
+    }
+  ],
+  "walkforward": {
+    "k": 10,
+    "positive_expectancy_folds": 10,
+    "positive_sharpe_folds": 10,
+    "pass_7of10_rule": true,
+    "folds": [
+      {
+        "fold": 1,
+        "start": "2006-01-02",
+        "end": "2007-10-18",
+        "n_trades": 36,
+        "wr": 0.4166666666666667,
+        "mean_r_net": 1.6344303516128318,
+        "sharpe_per_trade": 2.0491289143633065,
+        "ci_low": 1.0998200380100005,
+        "ci_high": 3.0620112927727146
+      },
+      {
+        "fold": 2,
+        "start": "2007-10-19",
+        "end": "2009-08-06",
+        "n_trades": 38,
+        "wr": 0.3684210526315789,
+        "mean_r_net": 1.51629407269999,
+        "sharpe_per_trade": 2.0424127428702383,
+        "ci_low": 0.8095562334336667,
+        "ci_high": 3.3188051047937193
+      },
+      {
+        "fold": 3,
+        "start": "2009-08-07",
+        "end": "2011-05-25",
+        "n_trades": 39,
+        "wr": 0.358974358974359,
+        "mean_r_net": 1.3558162433507774,
+        "sharpe_per_trade": 1.850768198006149,
+        "ci_low": 0.9374929041556102,
+        "ci_high": 2.846987131568075
+      },
+      {
+        "fold": 4,
+        "start": "2011-05-26",
+        "end": "2013-03-13",
+        "n_trades": 29,
+        "wr": 0.3793103448275862,
+        "mean_r_net": 1.4451430063552906,
+        "sharpe_per_trade": 1.6719555733126032,
+        "ci_low": 0.48026994471967166,
+        "ci_high": 2.9495360258102776
+      },
+      {
+        "fold": 5,
+        "start": "2013-03-14",
+        "end": "2014-12-30",
+        "n_trades": 34,
+        "wr": 0.38235294117647056,
+        "mean_r_net": 1.4846276491593597,
+        "sharpe_per_trade": 1.804822915972627,
+        "ci_low": 0.28913015105201745,
+        "ci_high": 3.219405144726879
+      },
+      {
+        "fold": 6,
+        "start": "2014-12-31",
+        "end": "2016-10-18",
+        "n_trades": 32,
+        "wr": 0.34375,
+        "mean_r_net": 1.1216348374275489,
+        "sharpe_per_trade": 1.4706158882948825,
+        "ci_low": 0.3746999750822427,
+        "ci_high": 2.453139250588205
+      },
+      {
+        "fold": 7,
+        "start": "2016-10-19",
+        "end": "2018-08-06",
+        "n_trades": 40,
+        "wr": 0.35,
+        "mean_r_net": 1.42934387226641,
+        "sharpe_per_trade": 1.8880209014511113,
+        "ci_low": 0.6457832980302304,
+        "ci_high": 2.969342317729595
+      },
+      {
+        "fold": 8,
+        "start": "2018-08-07",
+        "end": "2020-05-25",
+        "n_trades": 40,
+        "wr": 0.4,
+        "mean_r_net": 1.9750830255813216,
+        "sharpe_per_trade": 2.489098452559806,
+        "ci_low": 1.193281830333243,
+        "ci_high": 3.873483535292591
+      },
+      {
+        "fold": 9,
+        "start": "2020-05-26",
+        "end": "2022-03-11",
+        "n_trades": 35,
+        "wr": 0.4,
+        "mean_r_net": 1.78947742844514,
+        "sharpe_per_trade": 2.170543761550383,
+        "ci_low": 0.8846380514432979,
+        "ci_high": 3.5169544647516084
+      },
+      {
+        "fold": 10,
+        "start": "2022-03-14",
+        "end": "2023-12-29",
+        "n_trades": 40,
+        "wr": 0.175,
+        "mean_r_net": 0.23607777779801156,
+        "sharpe_per_trade": 0.39536633137270627,
+        "ci_low": -1.446739872602064,
+        "ci_high": 1.6558291326458479
+      }
+    ]
+  },
+  "gates": {
+    "TRAIN": {
+      "g1_sharpe_ci_pos": true,
+      "g2_wr_ge_50": false,
+      "g3_n_ge_100": true,
+      "g5_maxdd_le_15r": true
+    },
+    "VALIDATION": {
+      "g1_sharpe_ci_pos": true,
+      "g2_wr_ge_50": false,
+      "g3_n_ge_100": true,
+      "g5_maxdd_le_15r": false
+    },
+    "HOLDOUT": {
+      "g1_sharpe_ci_pos": false,
+      "g2_wr_ge_50": false,
+      "g3_n_ge_100": false,
+      "g5_maxdd_le_15r": false
+    },
+    "g4_walkforward_7of10": true
+  },
+  "all_gates_1_5_pass": false,
+  "gates_1_5_no_wr_pass": false,
+  "gates_train_only_pass": false
+}
