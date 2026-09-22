@@ -179,8 +179,10 @@ def _shadow_status() -> dict:
 
 
 def _sweep_evidence(freshseed: dict | None, engine_v02: dict | None,
-                    wr_pressure: dict | None) -> dict:
-    out = {"fresh_seed": None, "engine_v02": None, "wr_pressure": None}
+                    wr_pressure: dict | None,
+                    alt_strategy: dict | None = None) -> dict:
+    out = {"fresh_seed": None, "engine_v02": None, "wr_pressure": None,
+           "alt_strategy": None}
     if freshseed is not None:
         s = freshseed.get("summary", {})
         out["fresh_seed"] = {
@@ -238,6 +240,34 @@ def _sweep_evidence(freshseed: dict | None, engine_v02: dict | None,
                       else f"{n_both_g1_g2_val} seed(s) pass both Gate 1+2 on VAL")
             ),
         }
+    if alt_strategy is not None:
+        # Count seeds whose RR is ~symmetric (< 2.0) as "escaped the
+        # asymmetric family" — a lift-off from oil's default geometry.
+        n_symmetric = 0
+        n_wr_pass_val = 0
+        n_strict_v010 = alt_strategy.get("n_strict_v010_pass", 0)
+        for r in alt_strategy.get("runs", []):
+            rr = r.get("trade_cfg", {}).get("rr", 0)
+            if rr < 2.0:
+                n_symmetric += 1
+            va = next((s for s in r.get("slices", []) if s.get("slice") == "VALIDATION"), None)
+            if va and va.get("metrics", {}).get("directional_wr", 0) >= 0.50:
+                n_wr_pass_val += 1
+        pinned = alt_strategy.get("pinned", {})
+        out["alt_strategy"] = {
+            "n_seeds": alt_strategy.get("n_seeds"),
+            "pinned": pinned,
+            "n_symmetric_rr_lt_2": n_symmetric,
+            "n_wr_pass_VAL": n_wr_pass_val,
+            "n_strict_v010_pass": n_strict_v010,
+            "verdict": (
+                "even with trend+momentum pinned low, family stays asymmetric-R:R"
+                if n_symmetric == 0 and n_strict_v010 == 0
+                else (f"{n_strict_v010} seed(s) pass strict v0.1.0"
+                      if n_strict_v010 > 0
+                      else f"{n_symmetric} seed(s) escaped asymmetric family but none pass v0.1.0")
+            ),
+        }
     return out
 
 
@@ -289,6 +319,7 @@ def main() -> int:
     fresh = _load(RESULTS / "bots" / "bot_v2_freshseed_sweep.json")
     eng2 = _load(RESULTS / "bots" / "engine_v02_sweep.json")
     wrp = _load(RESULTS / "bots" / "wr_pressure_sweep.json")
+    alts = _load(RESULTS / "bots" / "alt_strategy_sweep.json")
     sig_qual = _load(RESULTS / "engine_signal_quality.json")
 
     audit_row = _audit_row(audit)
@@ -297,7 +328,7 @@ def main() -> int:
     cost_sum = _cost_stress_summary(cost)
     mc_sum = _monte_carlo_summary(mc)
     shadow = _shadow_status()
-    sweeps = _sweep_evidence(fresh, eng2, wrp)
+    sweeps = _sweep_evidence(fresh, eng2, wrp, alts)
 
     verdict = _readiness_verdict(audit_row, drift_sum, cost_sum, mc_sum, shadow,
                                    protocol_signed=args.protocol_signed)

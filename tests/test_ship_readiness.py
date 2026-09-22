@@ -222,4 +222,51 @@ def test_sweep_evidence_flags_full_pass_if_any_seed_clears_both():
 
 def test_sweep_evidence_handles_all_missing():
     got = sr._sweep_evidence(None, None, None)
-    assert got == {"fresh_seed": None, "engine_v02": None, "wr_pressure": None}
+    assert got == {"fresh_seed": None, "engine_v02": None, "wr_pressure": None,
+                    "alt_strategy": None}
+
+
+def test_sweep_evidence_alt_strategy_asymmetric_family_stays_asymmetric():
+    alts = {
+        "n_seeds": 3,
+        "pinned": {"w_trend": 0.5, "w_momentum": 0.5},
+        "n_strict_v010_pass": 0,
+        "runs": [
+            {"trade_cfg": {"rr": 4.3},
+             "slices": [{"slice": "VALIDATION",
+                         "metrics": {"directional_wr": 0.40}}]},
+            {"trade_cfg": {"rr": 5.1},
+             "slices": [{"slice": "VALIDATION",
+                         "metrics": {"directional_wr": 0.38}}]},
+            {"trade_cfg": {"rr": 3.9},
+             "slices": [{"slice": "VALIDATION",
+                         "metrics": {"directional_wr": 0.35}}]},
+        ],
+    }
+    got = sr._sweep_evidence(None, None, None, alts)
+    a = got["alt_strategy"]
+    assert a["n_symmetric_rr_lt_2"] == 0
+    assert a["n_wr_pass_VAL"] == 0
+    assert a["n_strict_v010_pass"] == 0
+    assert "family stays asymmetric" in a["verdict"]
+
+
+def test_sweep_evidence_alt_strategy_flags_strict_pass():
+    alts = {
+        "n_seeds": 2,
+        "pinned": {"w_trend": 0.5, "w_momentum": 0.5},
+        "n_strict_v010_pass": 1,
+        "runs": [
+            {"trade_cfg": {"rr": 1.0},
+             "slices": [{"slice": "VALIDATION",
+                         "metrics": {"directional_wr": 0.55}}]},
+            {"trade_cfg": {"rr": 4.0},
+             "slices": [{"slice": "VALIDATION",
+                         "metrics": {"directional_wr": 0.40}}]},
+        ],
+    }
+    got = sr._sweep_evidence(None, None, None, alts)
+    a = got["alt_strategy"]
+    assert a["n_symmetric_rr_lt_2"] == 1
+    assert a["n_wr_pass_VAL"] == 1
+    assert "pass strict v0.1.0" in a["verdict"]
