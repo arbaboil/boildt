@@ -28,7 +28,20 @@ COVERAGE_PENALTY = 8.0     # subtracted per missing fold
 
 
 def evaluate(genome: dict[str, float], features: pd.DataFrame,
-             ranges: list[tuple[pd.Timestamp, pd.Timestamp]]) -> dict[str, Any]:
+             ranges: list[tuple[pd.Timestamp, pd.Timestamp]],
+             wr_target: float = 0.0,
+             wr_penalty_scale: float = 0.0) -> dict[str, Any]:
+    """Evaluate a genome on K folds.
+
+    Fitness variants:
+    - Default (`wr_penalty_scale=0`): worst-fold Calmar. This is bot v2's
+      fitness — geometry-agnostic, picks the best risk-adjusted return
+      without regard to WR. Discovers asymmetric-R:R strategies.
+    - v3 style (`wr_penalty_scale>0, wr_target≈0.50`): worst-fold Calmar
+      minus a penalty proportional to the min-across-folds WR shortfall
+      below `wr_target`. Pushes evolution toward symmetric-R:R geometries
+      that clear PROTOCOL gate 2.
+    """
     vote_cfg, trade_cfg = genome_to_configs(genome)
     reads = score_matrix(features, vote_cfg)
     joined = features.merge(reads[["date", "read", "confidence", "score", "coverage"]],
@@ -71,12 +84,23 @@ def evaluate(genome: dict[str, float], features: pd.DataFrame,
     fitness -= COVERAGE_PENALTY * (n_folds_total - n_active)
     if not survived:
         fitness -= 5.0
+
+    # Optional WR penalty (v3 fitness). Uses the worst-fold WR so a genome
+    # can't hide behind a lucky-fold WR while others are 30%.
+    wr_shortfall = 0.0
+    if wr_penalty_scale > 0 and fold_wr:
+        min_wr = min(fold_wr)
+        wr_shortfall = max(0.0, wr_target - min_wr)
+        fitness -= wr_penalty_scale * wr_shortfall
+
     return {
         "fitness": fitness,
         "calmars": calmars,
         "median_calmar": float(np.median(calmars)),
         "mean_calmar": float(np.mean(calmars)),
         "fold_wr": fold_wr,
+        "min_fold_wr": float(min(fold_wr)) if fold_wr else 0.0,
+        "wr_shortfall": float(wr_shortfall),
         "n_trades": total_trades,
         "total_r": total_r,
         "max_dd": max_dd,
@@ -100,6 +124,8 @@ def evolve(features: pd.DataFrame,
            tourn_k: int = 3,
            sigma: float = 0.10,
            seed: int = 42,
+           wr_target: float = 0.0,
+           wr_penalty_scale: float = 0.0,
            verbose: bool = True) -> dict[str, Any]:
     rng = np.random.default_rng(seed)
     ranges = kfold_ranges(features["date"], k=k_folds)
@@ -114,7 +140,9 @@ def evolve(features: pd.DataFrame,
 
     for gen in range(n_gens):
         for i in range(pop_size):
-            reports[i] = evaluate(pop[i], features, ranges)
+            reports[i] = evaluate(pop[i], features, ranges,
+                                  wr_target=wr_target,
+                                  wr_penalty_scale=wr_penalty_scale)
             fits[i] = reports[i]["fitness"]
         order = np.argsort(fits)[::-1]
         best = order[0]
@@ -151,5 +179,7 @@ def evolve(features: pd.DataFrame,
         "n_gens": n_gens,
         "pop_size": pop_size,
         "seed": seed,
+        "wr_target": wr_target,
+        "wr_penalty_scale": wr_penalty_scale,
         "elapsed_s": round(time.time() - t0, 1),
     }

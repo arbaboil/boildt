@@ -25,6 +25,12 @@ def main() -> int:
     ap.add_argument("--sigma", type=float, default=0.12)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--tag", default="v1")
+    ap.add_argument("--wr-target", type=float, default=0.0,
+                    help="If > 0, apply a WR-shortfall penalty. Typical: 0.50 to push toward "
+                         "symmetric-R:R geometries. Default 0.0 (v2-style: no WR term).")
+    ap.add_argument("--wr-penalty-scale", type=float, default=0.0,
+                    help="Multiplier on the min-fold WR shortfall. Typical: 8.0 (a 10pp "
+                         "shortfall subtracts ~0.8 from fitness). Only active when >0.")
     args = ap.parse_args()
 
     features = pd.read_parquet(DATA_PROCESSED / "features.parquet")
@@ -34,10 +40,14 @@ def main() -> int:
     features = features.reset_index(drop=True)
 
     print(f"Evolving on {args.start}..{args.end}  ({len(features):,} rows)  "
-          f"pop={args.pop}  gens={args.gens}  folds={args.folds}  seed={args.seed}")
+          f"pop={args.pop}  gens={args.gens}  folds={args.folds}  seed={args.seed}  "
+          f"wr_target={args.wr_target}  wr_penalty_scale={args.wr_penalty_scale}")
     result = evolve(features, k_folds=args.folds, pop_size=args.pop,
                     n_gens=args.gens, elite=args.elite, sigma=args.sigma,
-                    seed=args.seed, verbose=True)
+                    seed=args.seed,
+                    wr_target=args.wr_target,
+                    wr_penalty_scale=args.wr_penalty_scale,
+                    verbose=True)
 
     RESULTS_BOTS.mkdir(parents=True, exist_ok=True)
     out = {
@@ -50,6 +60,8 @@ def main() -> int:
         "n_gens": result["n_gens"],
         "pop_size": result["pop_size"],
         "seed": result["seed"],
+        "wr_target": result.get("wr_target", 0.0),
+        "wr_penalty_scale": result.get("wr_penalty_scale", 0.0),
         "elapsed_s": result["elapsed_s"],
         "start": args.start,
         "end": args.end,
