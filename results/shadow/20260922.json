@@ -2,19 +2,19 @@
   "as_of": "2026-09-22",
   "requested_asof": "2026-09-22",
   "instrument": "WTI",
-  "engine": "v0",
-  "is_candidate": false,
+  "engine": "candidate:bot_v3_seed7_candidate",
+  "is_candidate": true,
   "read": "BUY",
-  "confidence": 0.7142857142857143,
-  "score": 0.5,
-  "coverage": 0.7142857142857143,
+  "confidence": 0.8247100171580968,
+  "score": 0.4780222638488981,
+  "coverage": 0.8247100171580968,
   "levels": {
     "ref": 93.30999755859375,
     "atr20": 2.139500122070314,
-    "atr_k_stop": 1.5,
-    "atr_k_target": 3.0,
-    "stop_long_at": 90.10074737548828,
-    "target_long_at": 99.72849792480469
+    "atr_k_stop": 0.7539798569451991,
+    "atr_k_target": 4.692845101573669,
+    "stop_long_at": 91.69685756262093,
+    "target_long_at": 103.35034022626769
   },
   "votes": {
     "trend": 1,
@@ -27,5 +27,5 @@
   },
   "shadow_only": true,
   "helios_version": "0.1.0",
-  "logged_at_utc": "2026-09-22T08:02:45+00:00"
+  "logged_at_utc": "2026-09-22T08:38:28+00:00"
 }

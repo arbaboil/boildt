@@ -82,7 +82,12 @@ def main() -> int:
 
     if args.candidate:
         bot = json.loads(Path(args.candidate).read_text(encoding="utf-8"))
-        vote_cfg, trade_cfg = genome_to_configs(bot["best_genome"])
+        # evolve_bot.py writes 'best_genome'; freshseed_sweep.py writes 'genome'.
+        genome = bot.get("best_genome") or bot.get("genome")
+        if genome is None:
+            raise SystemExit(f"Candidate {args.candidate} has neither "
+                             f"'best_genome' nor 'genome' key.")
+        vote_cfg, trade_cfg = genome_to_configs(genome)
         engine_tag = f"candidate:{Path(args.candidate).stem}"
         k_stop = trade_cfg.k_stop
         k_target = trade_cfg.k_target
