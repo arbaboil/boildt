@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "weeks": [
+    {
+      "week_of": "2026-09-21",
+      "week_end": "2026-09-27",
+      "direction": "LONG",
+      "outcome": {
+        "net_return_pct": null,
+        "exit_reason": null
+      },
+      "has_detail": true
+    }
+  ],
+  "generated_at_utc": "2026-09-22T18:37:37+00:00"
+}

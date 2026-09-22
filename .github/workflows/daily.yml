@@ -104,8 +104,8 @@ jobs:
           fi
           pip install --quiet awscli
           ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
-          # Emitted call/brief/backtest artifacts
-          for KEY in weekly/current.json daily/current.json backtest/summary.json; do
+          # Emitted call/brief/backtest artifacts + equity curve
+          for KEY in weekly/current.json daily/current.json backtest/summary.json backtest/curve.json; do
             SRC="results/emitted/${KEY}"
             if [ -f "$SRC" ]; then
               aws s3 cp "$SRC" "s3://${R2_BUCKET}/${KEY}" \
@@ -115,6 +115,16 @@ jobs:
               echo "Uploaded ${KEY} to ${R2_BUCKET}"
             fi
           done
+          # Weekly history — index + per-week snapshots. Recursive upload;
+          # aws s3 cp handles the whole directory in one call.
+          if [ -d "results/emitted/history" ]; then
+            aws s3 cp results/emitted/history/ "s3://${R2_BUCKET}/history/" \
+              --recursive \
+              --endpoint-url "$ENDPOINT" \
+              --content-type application/json \
+              --cache-control "public, max-age=30, s-maxage=30"
+            echo "Uploaded history/ to ${R2_BUCKET}"
+          fi
           # Kill-switch: uploaded so site-loader can render-time check (per
           # DEPLOY-PLAN §Site-loader behavior). Owner writes admin/killswitch.json
           # in the repo; cron mirrors it to R2. Cache TTL matches AXIS convention
@@ -133,6 +143,8 @@ jobs:
           git config user.email "helios-bot@users.noreply.github.com"
           # Only stage tracked artifact directories; raw data is gitignored
           # and .env must NEVER be committed.
+          # history/ is inside results/emitted/ so already covered by that add,
+          # but list explicitly for clarity.
           git add results/emitted/ results/shadow/ results/ship_readiness.json \
                   results/drift_status.json admin/drift.flag 2>/dev/null || true
           if git diff --cached --quiet; then

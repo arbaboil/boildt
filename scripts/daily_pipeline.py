@@ -94,6 +94,20 @@ def main() -> int:
             print("[fatal] emit_reads failed")
             return 4
 
+        # Equity curve — only re-emit if candidate is provided (needs a
+        # concrete genome + trade_cfg). Cheap; safe to run daily.
+        if args.candidate:
+            rc = _run([py, "scripts/emit_curve.py", "--candidate", args.candidate],
+                       "emit_curve")
+            if rc != 0:
+                print("[warn] emit_curve failed; continuing")
+
+        # Weekly history archive + rolling index. Always runs — it's the
+        # per-week snapshot storage that renders the /oil "past calls" strip.
+        rc = _run([py, "scripts/emit_history.py"], "emit_history")
+        if rc != 0:
+            print("[warn] emit_history failed; continuing")
+
     print(f"[{datetime.now(timezone.utc).isoformat(timespec='seconds')}] pipeline done.")
     return 0
 
