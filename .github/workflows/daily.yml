@@ -94,6 +94,7 @@ jobs:
           fi
           pip install --quiet awscli
           ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          # Emitted call/brief/backtest artifacts
           for KEY in weekly/current.json daily/current.json backtest/summary.json; do
             SRC="results/emitted/${KEY}"
             if [ -f "$SRC" ]; then
@@ -104,6 +105,17 @@ jobs:
               echo "Uploaded ${KEY} to ${R2_BUCKET}"
             fi
           done
+          # Kill-switch: uploaded so site-loader can render-time check (per
+          # DEPLOY-PLAN §Site-loader behavior). Owner writes admin/killswitch.json
+          # in the repo; cron mirrors it to R2. Cache TTL matches AXIS convention
+          # (30s) so a flip propagates fast.
+          if [ -f "admin/killswitch.json" ]; then
+            aws s3 cp "admin/killswitch.json" "s3://${R2_BUCKET}/admin/killswitch.json" \
+              --endpoint-url "$ENDPOINT" \
+              --content-type application/json \
+              --cache-control "public, max-age=30, s-maxage=30"
+            echo "Uploaded admin/killswitch.json to ${R2_BUCKET}"
+          fi
 
       - name: Commit and push results
         run: |
