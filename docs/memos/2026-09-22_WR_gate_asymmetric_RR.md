@@ -115,23 +115,78 @@ freak of a specific seed and the gate is malformed for oil.
 - Cost: only if members are confused by low WR. Adds UI/copy work.
 - Owner burden: **approve disclosure + review member-facing copy**.
 
-## 5. Helios recommendation
+## 5. Sweep result (N=20 seeds, GA pop=64 gens=30, ATR-fixed data)
 
-**Option B**, contingent on the 20-seed sweep showing that WR-passing
-genomes are rare (< 30% of seeds). If WR-passing genomes are common,
-default to Option A.
+**Gate pass rates:**
 
-Reason: the gate's *purpose* is to catch strategies that make money on
-luck. Expectancy-CI does that with zero geometry bias. AXIS and Sable
-would benefit from the same amendment; consistency across FAR-bot policy
-still holds, just at a higher level of abstraction.
+| Gate | Pass rate | Notes |
+|---|---|---|
+| 1 — Sharpe CI > 0 on TRAIN | 100% | median CI-low +1.07 |
+| 1 — Sharpe CI > 0 on VAL | ~95% | median CI-low +0.44 |
+| 1 — Sharpe CI > 0 on HOLDOUT | 50% | median CI-low ≈ 0.00 |
+| **2 — WR ≥ 50% on TRAIN** | **0%** | median WR 40% |
+| **2 — WR ≥ 50% on VALIDATION** | **0%** | median WR 33% |
+| 3 — n ≥ 100 TRAIN | 100% | median n=232 |
+| 4 — walk-forward 7/10 folds positive | 100% | 19/20 seeds get 10/10 |
+| 5 — max_dd ≤ 15R on TRAIN | 100% | |
+| **strict gates 1-5 (TRAIN + VAL + WF)** | **0%** | WR always blocks |
+| **strict minus WR** | **95%** | one seed fails on VAL max_dd |
 
-## 6. What Helios does next
+**Zero seeds out of twenty reach WR ≥ 50% on either TRAIN or VAL.** All
+20 seeds converge to R:R = 3.9-6.7 (mean ~6.0). Every seed independently
+discovers the same qualitative genome shape: heavy on w_curve (2.5-3.8)
+and w_macro (1.8-4.0), tight stop (0.75-0.85 ATR), large target (3.4-5.0
+ATR), 6-11 day max hold.
 
-- Wait for `results/bots/bot_v2_freshseed_sweep.json` (bg `bgkj9u7pm`).
-- Update this memo with the WR distribution across 20 seeds.
-- Owner picks A / B / C. Helios executes.
-- If B: draft PROTOCOL v0.2.0 amendment for owner sign-off.
-- If A: kick off v3 evolution with R:R-penalizing fitness.
+This is convergent evidence: the natural profitable oil strategy is an
+asymmetric-R:R trend-follower on curve + macro signals. It is not a
+"lucky seed" phenomenon.
+
+## 6. Verdict
+
+**Helios recommends Option B — replace WR ≥ 50% with an expectancy-CI
+gate.** The 20-seed evidence rules out Option A (v3-with-WR-penalty)
+because the search space simply doesn't contain a symmetric-R:R oil
+strategy that competes. Option C (ship v2 with disclosure) is now stale
+— session 1's v2 is superseded by seed 7 from the fresh-seed sweep,
+which is materially better.
+
+Proposed PROTOCOL v0.2.0 amendment (owner to approve or edit):
+
+**Replace Gate 2** (Directional WR ≥ 50%) with:
+- **Gate 2a**: bootstrap 95% CI lower bound of `mean_r_net` > 0 on
+  TRAIN + VAL. (An honest expectancy floor.)
+- **Gate 2b**: `WR × avg_R_up + (1 − WR) × avg_R_down > 0`. (The invariant
+  WR was proxying — average trade is profitable in R terms.)
+
+The Sharpe CI gate (Gate 1) already catches strategies that make money
+by luck; adding an expectancy-CI floor closes any residual loophole.
+Geometry-neutral.
+
+## 7. Candidate bot: seed 7
+
+If Option B is approved, Helios recommends `results/bots/
+bot_v3_seed7_candidate.json` as the ship candidate. It clears
+Sharpe CI > 0 on **all three slices** (only 3 of 20 seeds achieve this):
+
+| Slice | n | WR | mean R | Sharpe | Sharpe CI |
+|---|---|---|---|---|---|
+| TRAIN 2006-2018 | 238 | 38% | +1.14 | +1.60 | [+1.14, +2.04] |
+| VAL 2019-2023 | 89 | 33% | +0.88 | +1.24 | [+0.45, +1.98] |
+| HOLDOUT 2024→ | 58 | 36% | +0.97 | +1.49 | [+0.58, +2.24] |
+| WF K=10 | | | | | 10/10 positive |
+
+Genome: k_stop 0.75 ATR, k_target 4.69 ATR (RR 6.22), max_hold 11 days.
+Heaviest weights: curve 3.83, vol 2.10, macro 2.07.
+
+## 8. What Helios does next
+
+- Await owner decision on Option B (or a variant).
+- On approval: draft PROTOCOL v0.2.0 amendment; add `is_candidate: true`
+  shadow entries for seed 7; run the 4-week silent-live window.
+- Independent of the gate decision: continue improving the engine
+  (add EIA weekly surprise via API key; add regime labels; refine costs
+  for physical-crude realities). None of these require the WR-gate call
+  to be resolved.
 
 — Helios
