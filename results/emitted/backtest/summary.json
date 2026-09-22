@@ -2,7 +2,7 @@
   "type": "backtest_summary",
   "schema_version": 1,
   "candidate": "bot_v3_seed7_candidate",
-  "protocol_version": "0.1.0",
+  "protocol_version": "0.2.1",
   "slices": {
     "TRAIN": {
       "n": 234,

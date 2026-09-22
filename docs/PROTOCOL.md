@@ -1,7 +1,7 @@
 # HELIOS — Protocol (LOCKED)
 
-Version: 0.2.0
-Locked: 2026-09-22
+Version: 0.2.1
+Locked: 2026-09-22 (v0.2.1 same-day amendment — Owner-approved early ship)
 Amendment rule: only Owner can amend. All changes bump version + append to
 Amendment Log at bottom.
 
@@ -115,3 +115,4 @@ score ≥ previous version. Never decrease.
 |---|---|---|---|
 | 0.1.0 | 2026-09-18 | Initial protocol lock | Helios (session-1) |
 | 0.2.0 | 2026-09-22 | Gate 2 (WR ≥ 50%) replaced with Gate 2a (expectancy CI > 0) + Gate 2b (WR × avg_R_up − (1−WR) × avg_R_down ≥ +0.05). Motivated by 4-sweep × 51-seed evidence proving asymmetric R:R is structural to oil's profitable-strategy manifold. Under v0.1.0 zero seeds pass; under v0.2.0 seed 7 passes cleanly. See `docs/SESSION3-REPORT.md`, `docs/PROTOCOL_v0.2.0_DRAFT.md` (retired), `memory/feedback_wr_gate_structural_2026-09-22.md`. Approved by Owner. | Helios (session-3) |
+| 0.2.1 | 2026-09-22 | **Gate 7 (Shadow window ≥ 4 weeks) overridden by Owner for the first ship of bot v3 seed 7.** Ship on day 5 of 28 (2026-09-22 vs original 2026-10-20). Rationale (per Owner): offline gates airtight, bot behaviorally validated across 4 sweeps + Brent + sensitivity, and any latent bug is caught by heightened live monitoring. **Compensating controls:** (a) new `scripts/drift_monitor.py` runs after every daily emit and flags reads outside the walk-forward envelope (median WR ± 10pp, mean_R inside p25/p75 bootstrap); (b) daily cron reports drift via GitHub Actions status; (c) any drift flag pauses live emission automatically and defaults back to SHADOW until Owner clears the flag. Gate 7 clock continues to run to 2026-10-20; if a drift trip fires between now and then, Owner can retroactively enforce v0.2.0 Gate 7 by kill-switch + wait-out. Approved by Owner. | Helios (session-3 ship) |

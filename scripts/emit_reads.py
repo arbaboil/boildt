@@ -36,8 +36,9 @@ from src.util.paths import DATA_PROCESSED
 
 RESULTS_EMITTED = Path(__file__).resolve().parents[1] / "results" / "emitted"
 KILLSWITCH_PATH = Path(__file__).resolve().parents[1] / "admin" / "killswitch.json"
+DRIFT_FLAG_PATH = Path(__file__).resolve().parents[1] / "admin" / "drift.flag"
 SCHEMA_VERSION = 1
-HELIOS_VERSION = "0.1.0"
+HELIOS_VERSION = "0.2.1"
 
 # priceStep-style bounds (see docs/DEPLOY-PLAN.md — bump PROTOCOL if changed)
 ATR_PCT_MIN = 0.005   # 0.5%
@@ -184,6 +185,13 @@ def _load_killswitch() -> tuple[bool, str | None]:
         except ValueError:
             pass
     return True, ks.get("reason")
+
+
+def _drift_flag_active() -> bool:
+    """PROTOCOL v0.2.1 compensating control — if drift_monitor.py has
+    tripped, force SHADOW mode regardless of --live. Owner must delete
+    admin/drift.flag manually to re-enable live emission."""
+    return DRIFT_FLAG_PATH.exists()
 
 
 def _build_call_payload(features: pd.DataFrame, reads: pd.DataFrame,
@@ -356,8 +364,14 @@ def main() -> int:
 
     # Weekly goes live when --live. Daily requires an explicit --daily-live
     # because it has its own gate profile and currently fails Gate 5.
-    weekly_shadow = not args.live
-    daily_shadow = not (args.live and args.daily_live)
+    # PROTOCOL v0.2.1: if admin/drift.flag is present, force shadow on
+    # everything regardless of --live. Owner clears the flag to resume.
+    drift_active = _drift_flag_active()
+    if drift_active:
+        print("[emit_reads] admin/drift.flag present — forcing SHADOW mode "
+              "on weekly + daily per PROTOCOL v0.2.1 compensating control.")
+    weekly_shadow = not args.live or drift_active
+    daily_shadow = not (args.live and args.daily_live) or drift_active
     weekly = _build_call_payload(features, reads, idx, vote_cfg,
                                  k_stop, k_target, max_hold,
                                  candidate_stem, genome_hash,

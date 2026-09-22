@@ -5,9 +5,9 @@
   "schema_version": 1,
   "instrument": "WTI",
   "signal_date_utc": "2026-09-22T00:00:00+00:00",
-  "published_utc": "2026-09-22T14:03:39+00:00",
-  "direction": "SHADOW",
-  "shadow_mode": true,
+  "published_utc": "2026-09-22T14:51:43+00:00",
+  "direction": "LONG",
+  "shadow_mode": false,
   "current_price": 93.30999755859375,
   "atr_20d": 2.139500122070314,
   "signal_components": {
@@ -49,21 +49,21 @@
   },
   "confidence": 92,
   "score": 0.4780222638488981,
-  "message": "HELIOS shadow mode \u2014 this call resolves internally, not for member trading.",
+  "message": "3 components confirming long bias; 92% confidence.",
   "primary_risk": {
-    "sentence": "Shadow mode: no live position risk.",
+    "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
     "severity": "med",
     "trigger": null
   },
   "provenance": {
     "candidate": "bot_v3_seed7_candidate",
-    "protocol_version": "0.1.0",
+    "protocol_version": "0.2.1",
     "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
     "coverage": 0.9184366047195975,
     "null_components": [
       "cot"
     ],
-    "helios_version": "0.1.0",
+    "helios_version": "0.2.1",
     "kill_switch_engaged": false,
     "kill_switch_reason": null,
     "bounds_violated": false,

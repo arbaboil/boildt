@@ -1,0 +1,18 @@
+{
+  "checked_at_utc": "2026-09-22T14:51:43+00:00",
+  "artifact_checked": "results\\emitted\\weekly\\current.json",
+  "history_days": 2,
+  "drift_detected": false,
+  "n_failing_categories": 0,
+  "checks": {
+    "basic_sanity": [],
+    "priceStep_bounds": [],
+    "confidence_outlier": [],
+    "direction_churn": [],
+    "coverage": [],
+    "provenance": []
+  },
+  "protocol_version": "0.2.1",
+  "override_active": true,
+  "override_reason": "Owner-approved early ship (day 5 of 28); this monitor is the compensating control."
+}
