@@ -4,7 +4,7 @@
   "schema_version": 1,
   "instrument": "WTI",
   "signal_date_utc": "2026-09-22T00:00:00+00:00",
-  "published_utc": "2026-09-22T09:17:09+00:00",
+  "published_utc": "2026-09-22T13:27:01+00:00",
   "direction": "SHADOW",
   "shadow_mode": true,
   "current_price": 93.30999755859375,
@@ -38,7 +38,7 @@
     "eia": {
       "vote": 0,
       "weight": 1.1274738072894082,
-      "value": null
+      "value": 0.0
     },
     "macro": {
       "vote": 0,
@@ -46,7 +46,7 @@
       "value": 0.010810161231266359
     }
   },
-  "confidence": 82,
+  "confidence": 92,
   "score": 0.4780222638488981,
   "message": "HELIOS shadow mode \u2014 this call resolves internally, not for member trading.",
   "primary_risk": {
@@ -58,10 +58,9 @@
     "candidate": "bot_v3_seed7_candidate",
     "protocol_version": "0.1.0",
     "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
-    "coverage": 0.8247100171580968,
+    "coverage": 0.9184366047195975,
     "null_components": [
-      "cot",
-      "eia"
+      "cot"
     ],
     "helios_version": "0.1.0",
     "kill_switch_engaged": false,
