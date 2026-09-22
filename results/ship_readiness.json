@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-22T10:59:47+00:00",
+  "generated_at_utc": "2026-09-22T12:50:06+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v010": false,
@@ -126,6 +126,26 @@
       "n_wr_pass_VAL": 0,
       "n_strict_v010_pass": 0,
       "verdict": "even with trend+momentum pinned low, family stays asymmetric-R:R"
+    }
+  },
+  "brent_cross_validation": {
+    "verdict": "yes \u2014 cross-crude validation succeeds",
+    "slices": {
+      "TRAIN": {
+        "wr": 0.3446808510638298,
+        "mean_r_net": 0.9482247631353353,
+        "sharpe_ci_low": 0.8556293009496878
+      },
+      "VALIDATION": {
+        "wr": 0.3488372093023256,
+        "mean_r_net": 0.8814135428841724,
+        "sharpe_ci_low": 0.43515307025224453
+      },
+      "HOLDOUT": {
+        "wr": 0.375,
+        "mean_r_net": 0.8784494919264113,
+        "sharpe_ci_low": 0.4055045676127573
+      }
     }
   },
   "engine_only_signal_quality": {

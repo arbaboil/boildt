@@ -321,6 +321,7 @@ def main() -> int:
     wrp = _load(RESULTS / "bots" / "wr_pressure_sweep.json")
     alts = _load(RESULTS / "bots" / "alt_strategy_sweep.json")
     sig_qual = _load(RESULTS / "engine_signal_quality.json")
+    brent_val = _load(RESULTS / "bots" / f"{stem}_brent_validation.json")
 
     audit_row = _audit_row(audit)
     gate_2b = _payoff_adjusted_wr_invariant(audit)
@@ -352,6 +353,20 @@ def main() -> int:
                 "e4_stability_ge_70pct": s["stability"] >= 0.70,
             }
 
+    # Cross-crude Brent validation (external instrument test).
+    brent_summary: dict | None = None
+    if brent_val is not None:
+        brent_summary = {
+            "verdict": brent_val.get("verdict", {}).get("generalizes_to_brent"),
+            "slices": {},
+        }
+        for s in brent_val.get("slices", []):
+            brent_summary["slices"][s["slice"]] = {
+                "wr": s["metrics"]["directional_wr"],
+                "mean_r_net": s["metrics"]["mean_r_net"],
+                "sharpe_ci_low": s["bootstrap_sharpe"]["ci_low"],
+            }
+
     report = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "candidate_stem": stem,
@@ -363,6 +378,7 @@ def main() -> int:
         "monte_carlo": mc_sum,
         "shadow": shadow,
         "sweep_evidence": sweeps,
+        "brent_cross_validation": brent_summary,
         "engine_only_signal_quality": sig_qual_summary,
         "sources": {
             "audit": str((RESULTS / "bots" / f"{stem}_audit.json").relative_to(REPO)),
@@ -416,6 +432,14 @@ def main() -> int:
         for k, v in s.items():
             print(f"    {k:30s}  {v}")
     print()
+    if brent_summary is not None:
+        print("BRENT CROSS-CRUDE VALIDATION (external instrument):")
+        print(f"  verdict: {brent_summary['verdict']}")
+        for slice_name, g in brent_summary["slices"].items():
+            print(f"  {slice_name:12s}  WR={g['wr']:.0%}  mean_R={g['mean_r_net']:+.3f}  "
+                  f"Sharpe_CI_low={g['sharpe_ci_low']:+.2f}")
+        print()
+
     if sig_qual_summary is not None:
         print("ENGINE-ONLY SIGNAL QUALITY (Plan B if v0.2.0 rejected):")
         for slice_name in ("TRAIN", "VALIDATION", "HOLDOUT"):

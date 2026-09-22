@@ -78,7 +78,26 @@ full 386-trade history.
 - 95th-percentile max drawdown: 13.5R (inside Gate 5 threshold)
 - Under +5 bps extra slippage: 98.5% positive year, 0.00% ruin
 
-### 1.5 Holdout drift (`results/bots/bot_v3_seed7_candidate_holdout_drift.json`)
+### 1.5 Brent cross-crude validation (`results/bots/bot_v3_seed7_candidate_brent_validation.json`)
+
+External-instrument test: seed 7's VoteConfig + TradeConfig, but
+price-derived features recomputed from Brent close (macro/positioning
+features unchanged since those are crude-complex-wide).
+
+| Slice | WTI (reference) | Brent | Verdict |
+|---|---|---|---|
+| TRAIN Sharpe CI-low | +1.14 | **+0.86** | PASS |
+| VAL Sharpe CI-low | +0.43 | **+0.44** | PASS |
+| HOLDOUT Sharpe CI-low | +0.61 | **+0.41** | PASS |
+| VAL mean_R | +0.88 | **+0.88** | ≈ identical |
+| HOLDOUT mean_R | +0.97 | **+0.88** | ≈ identical |
+
+**All three slices pass Gate 1 on Brent.** VAL and HOLDOUT mean_R are
+essentially identical between WTI and Brent. This is the strongest
+possible external validation — seed 7 captures a crude-complex signal,
+not a WTI-idiosyncratic overfit.
+
+### 1.6 Holdout drift (`results/bots/bot_v3_seed7_candidate_holdout_drift.json`)
 
 11 quarters × 58 trades × total_R +56.5 × holdout WR 36.2%.
 

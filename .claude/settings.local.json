@@ -28,7 +28,12 @@
       "Bash(tasklist //FI \"IMAGENAME eq python.exe\")",
       "Bash(tasklist //FI \"IMAGENAME eq python.exe\" //V)",
       "Bash(PYTHONIOENCODING=utf-8 python scripts/engine_signal_quality.py --candidate results/bots/bot_v3_seed7_candidate.json)",
-      "Bash(PYTHONIOENCODING=utf-8 python scripts/ship_readiness.py)"
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/ship_readiness.py)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(sed -n '55,70p' tests/test_build_features_gaps.py)",
+      "Bash(sed -n '55,70p' tests/test_regime_labels.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/brent_cross_validation.py)"
     ]
   }
 }
