@@ -1,13 +1,17 @@
 ---
-name: WR gate structurally unreachable for oil (session 2, 20-seed sweep)
-description: 20 independent GA seeds all converge to asymmetric R:R. WR ≥ 50% is not reachable for oil under current features.
+name: WR gate and Sharpe-CI gate are structurally mutually exclusive on oil (3 sweeps, 42 seeds)
+description: Under strict PROTOCOL v0.1.0, zero of 42 seeds tested pass both Gate 1 (Sharpe CI > 0 on VAL) AND Gate 2 (WR ≥ 50% on VAL). The gates are in structural tension on oil's signal manifold.
 type: feedback
 ---
 
-Fresh-seed sweep of 20 evolved bots on ATR-fixed data (bot_v2_freshseed_sweep.json, 2026-09-22): **0/20 seeds achieve WR ≥ 50% on TRAIN or VAL.** All 20 independently converge to R:R = 3.9–6.7, heavy on w_curve (2.5–3.8) and w_macro (1.8–4.0), tight stops (0.75–0.85 ATR), large targets (3.4–5.0 ATR).
+Three independent GA search strategies were run on ATR-fixed data (2026-09-22 session 3), 42 seeds total:
 
-95% of seeds pass strict-minus-WR (TRAIN + VAL Sharpe CI > 0 + WF ≥ 7/10 + max_dd ≤ 15R + n ≥ 100). Median TRAIN Sharpe CI-low +1.07, median VAL Sharpe CI-low +0.44. Real edge, wrong shape for a 50%-WR gate.
+1. **Fresh-seed sweep** (`bot_v2_freshseed_sweep.json`, 20 seeds, worst-fold Calmar fitness, free R:R): 20/20 pass Sharpe CI-low > 0 on TRAIN + VAL + HOLDOUT. 0/20 pass WR ≥ 50%. Converge to R:R = 3.9-6.7 (asymmetric trend-follower).
+2. **Engine v0.2 sweep** (`engine_v02_sweep.json`, 12 seeds, worst-fold Calmar fitness, locked TradeConfig k_stop=1.5 k_target=3.0): 0/12 pass Sharpe CI-low > 0 on VAL/HOLDOUT (all negative). 0/12 pass WR ≥ 50%. Locked symmetric R:R produces TRAIN-only fits that don't generalize.
+3. **WR-pressure sweep** (`wr_pressure_sweep.json`, 10 seeds, worst-fold Calmar − 15 × max(0, 0.55 − min_fold_WR), free R:R): 10/10 pass WR ≥ 50% on TRAIN, 8/10 on VAL. 0/10 pass Sharpe CI-low > 0 on VAL (all -0.16 to -0.76). Converge to R:R = 0.77-1.62 (roughly symmetric).
 
-**Why:** The PROTOCOL v0.1.0 gate 2 (WR ≥ 50%) was inherited from AXIS (BTC/gold), where symmetric R:R strategies dominate. Oil's natural profitable family is asymmetric trend-follower — high avg-R payoff, sub-50% WR. Gate 2 filters out the entire oil signal family. This is not a lucky-seed artifact — it's convergent from independent seeds.
+**Verdict: 0 of 42 seeds pass both Gate 1 AND Gate 2 on VAL simultaneously.**
 
-**How to apply.** Recommend owner adopt PROTOCOL v0.2.0 amendment: replace WR ≥ 50% with expectancy-CI floor (bootstrap 95% CI of mean_r_net > 0 on TRAIN + VAL) plus a "WR × avg_R_up + (1 − WR) × avg_R_down > 0" invariant (which is what WR ≥ 50% was proxying for symmetric R:R). Draft memo at `docs/memos/2026-09-22_WR_gate_asymmetric_RR.md`. Until owner amends: bot line is ship-blocked. Engine improvements (features, regime labels, EIA surprise) are independent and can continue.
+**Why:** The two gates capture different geometric properties. Gate 1 (Sharpe CI) rewards strategies where the *risk-adjusted* expected R generalizes out of sample — favored by asymmetric trend-followers on oil. Gate 2 (WR) rewards strategies where the *directional accuracy* is symmetric-R:R-friendly — but symmetric R:R on oil doesn't generalize past TRAIN. Oil's profitable-strategy manifold has these two properties in structural tension.
+
+**How to apply.** The PROTOCOL v0.2.0 amendment is not "the easier path"; it is the ONLY path that admits a ship candidate under any tested search strategy. Under v0.1.0 nothing ships. Under v0.2.0 (Gate 1 CI + Gate 2b `mean_r_net ≥ 0.05` invariant, WR gate removed), bot v3 seed 7 passes cleanly on all 3 slices. See `docs/SESSION3-REPORT.md` for the full evidence bundle. Until owner signs v0.2.0: bot line remains ship-blocked. Engine can still ship using seed 7's tuned VoteConfig as its signal producer (already wired in `scripts/emit_reads.py`).

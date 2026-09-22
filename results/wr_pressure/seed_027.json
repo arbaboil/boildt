@@ -1,0 +1,136 @@
+{
+  "seed": 27,
+  "elapsed_s": 532.7,
+  "genome": {
+    "w_trend": 0.6690948580370422,
+    "w_momentum": 0.9722302680294118,
+    "w_vol": 1.196808095252049,
+    "w_curve": 4.0,
+    "w_cot": 1.6008950571277485,
+    "w_eia": 0.0,
+    "w_macro": 1.9820261430604151,
+    "trend_bull": 0.033049429003721,
+    "trend_bear": -0.08906913250683705,
+    "momo_bull": 0.03629717298717532,
+    "momo_bear": -0.09707822827097048,
+    "cot_bull": -1.2759682181917438,
+    "cot_bear": 1.6156493087894008,
+    "curve_bull": 0.3,
+    "curve_bear": -0.7273648032514036,
+    "dxy_bear": 0.028674702008668857,
+    "dxy_bull": -0.018543762825729497,
+    "strong": 0.4,
+    "moderate": 0.20189332936576404,
+    "min_coverage": 0.8,
+    "k_stop": 1.9509477859723159,
+    "k_target": 2.704249613836584,
+    "max_hold_days": 31.0
+  },
+  "trade_cfg": {
+    "k_stop": 1.9509477859723159,
+    "k_target": 2.704249613836584,
+    "max_hold_days": 31,
+    "rr": 1.3861209578650189
+  },
+  "slices": [
+    {
+      "slice": "TRAIN",
+      "metrics": {
+        "n_trades": 238,
+        "n_directional": 238,
+        "n_flat": 0,
+        "flat_rate": 0.0,
+        "directional_wr": 0.5378151260504201,
+        "mean_r_net": 0.240808360832025,
+        "median_r_net": 1.3231475763385743,
+        "total_r_net": 57.31238987802195,
+        "max_dd_r": 6.16993748580947,
+        "sharpe_per_trade": 0.8733332431972659,
+        "sortino_per_trade": 12.625612345525399,
+        "calmar_r": 9.2889741605709,
+        "long_wr": 0.5170068027210885,
+        "short_wr": 0.5714285714285714,
+        "n_long": 147,
+        "n_short": 91,
+        "n_target": 126,
+        "n_stop": 109,
+        "n_time": 3
+      },
+      "bootstrap_sharpe": {
+        "mean": 0.8735673141349554,
+        "ci_low": 0.3579904725107202,
+        "ci_high": 1.3721120928509714,
+        "n_boot": 2000,
+        "block_size": 5
+      }
+    },
+    {
+      "slice": "VALIDATION",
+      "metrics": {
+        "n_trades": 112,
+        "n_directional": 112,
+        "n_flat": 0,
+        "flat_rate": 0.0,
+        "directional_wr": 0.49107142857142855,
+        "mean_r_net": 0.13858174583994293,
+        "median_r_net": -0.7911607709363908,
+        "total_r_net": 15.521155534073607,
+        "max_dd_r": 12.36212001919345,
+        "sharpe_per_trade": 0.5510488360799282,
+        "sortino_per_trade": 10.696175341661869,
+        "calmar_r": 1.25554156649308,
+        "long_wr": 0.48484848484848486,
+        "short_wr": 0.5,
+        "n_long": 66,
+        "n_short": 46,
+        "n_target": 54,
+        "n_stop": 56,
+        "n_time": 2
+      },
+      "bootstrap_sharpe": {
+        "mean": 0.5313340160387959,
+        "ci_low": -0.4742093705878963,
+        "ci_high": 1.5690272466869335,
+        "n_boot": 2000,
+        "block_size": 5
+      }
+    },
+    {
+      "slice": "HOLDOUT",
+      "metrics": {
+        "n_trades": 62,
+        "n_directional": 62,
+        "n_flat": 0,
+        "flat_rate": 0.0,
+        "directional_wr": 0.43548387096774194,
+        "mean_r_net": 0.0019845805560168126,
+        "median_r_net": -1.0278086388056311,
+        "total_r_net": 0.12304399447304237,
+        "max_dd_r": 6.247867966668666,
+        "sharpe_per_trade": 0.007958133072968407,
+        "sortino_per_trade": 0.8635645810339188,
+        "calmar_r": 0.019693757155154618,
+        "long_wr": 0.5128205128205128,
+        "short_wr": 0.30434782608695654,
+        "n_long": 39,
+        "n_short": 23,
+        "n_target": 27,
+        "n_stop": 35,
+        "n_time": 0
+      },
+      "bootstrap_sharpe": {
+        "mean": -0.012426038191998874,
+        "ci_low": -1.1227119176030962,
+        "ci_high": 0.9351989371773523,
+        "n_boot": 2000,
+        "block_size": 5
+      }
+    }
+  ],
+  "walkforward": {
+    "positive_expectancy_folds": 9,
+    "pass_7of10_rule": true
+  },
+  "wr_target": 0.55,
+  "wr_penalty_scale": 15.0
+}

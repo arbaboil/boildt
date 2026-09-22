@@ -1,0 +1,127 @@
+{
+  "generated_at_utc": "2026-09-22T09:59:22+00:00",
+  "candidate_stem": "bot_v3_seed7_candidate",
+  "verdict": {
+    "ready_v010": false,
+    "ready_v020": true,
+    "blocking_reasons": [
+      "PROTOCOL v0.2.0 unsigned (Owner action required)",
+      "Gate 7 shadow: 26 days remaining (2/28)"
+    ],
+    "green_light": false
+  },
+  "gates": {
+    "TRAIN_g1_sharpe_ci_pos": true,
+    "VAL_g1_sharpe_ci_pos": true,
+    "HO_g1_sharpe_ci_pos": true,
+    "TRAIN_g2_wr_ge_50": false,
+    "VAL_g2_wr_ge_50": false,
+    "TRAIN_g3_n_ge_100": true,
+    "g4_wf_7of10": true,
+    "TRAIN_g5_dd_le_15": true,
+    "VAL_g5_dd_le_15": true,
+    "HO_g5_dd_le_15": true,
+    "TRAIN_g6_perm_ok": true,
+    "VAL_g6_perm_ok": true,
+    "HO_g6_perm_ok": true,
+    "b6_regime_ok": true,
+    "strict_v010_pass": false,
+    "proposed_v020_pass": true
+  },
+  "gate_2b_payoff_adjusted": {
+    "TRAIN": {
+      "wr": 0.37815126050420167,
+      "mean_r_net": 1.1427731862099852,
+      "gate_2b_pass": true
+    },
+    "VALIDATION": {
+      "wr": 0.3258426966292135,
+      "mean_r_net": 0.8815068375413462,
+      "gate_2b_pass": true
+    },
+    "HOLDOUT": {
+      "wr": 0.3620689655172414,
+      "mean_r_net": 0.9732529125783472,
+      "gate_2b_pass": true
+    }
+  },
+  "drift": {
+    "status": "present",
+    "n_quarters": 11,
+    "n_negative_quarters": 2,
+    "total_r_holdout": 56.45,
+    "total_n_holdout": 58,
+    "holdout_wr": 0.362,
+    "worst_quarter": "2025Q3"
+  },
+  "cost_stress": {
+    "status": "present",
+    "scenarios": [
+      {
+        "mult": 1.0,
+        "TRAIN_mean_r": 1.1427731862099852,
+        "VAL_mean_r": 0.8815068375413462,
+        "HO_mean_r": 0.9732529125783472
+      },
+      {
+        "mult": 2.0,
+        "TRAIN_mean_r": 1.0372149385833485,
+        "VAL_mean_r": 0.795166032675788,
+        "HO_mean_r": 0.8753744752055603
+      },
+      {
+        "mult": 3.0,
+        "TRAIN_mean_r": 0.9316566909567121,
+        "VAL_mean_r": 0.7088252278102298,
+        "HO_mean_r": 0.7774960378327734
+      }
+    ],
+    "all_positive_all_slices": true
+  },
+  "monte_carlo": {
+    "status": "present",
+    "horizon_trades": 40,
+    "n_paths": 10000,
+    "prob_positive_final_r": 0.9886,
+    "prob_ruin": 0.0,
+    "final_r_median": 41.6181207940907,
+    "final_r_p05": 10.897295137721374,
+    "max_dd_r_p95": 13.517137316814047
+  },
+  "shadow": {
+    "status": "present",
+    "n_days": 2,
+    "first_day": "20260918.json",
+    "last_day": "20260922.json",
+    "days_until_gate7_pass": 26
+  },
+  "sweep_evidence": {
+    "fresh_seed": {
+      "n_seeds": 20,
+      "frac_wr_pass_TRAIN": 0.0,
+      "frac_gates_1_5_no_wr_strict": 0.95,
+      "verdict": "0 seeds pass WR \u2014 asymmetric R:R inevitable"
+    },
+    "engine_v02": {
+      "n_seeds": 12,
+      "n_pass_wr_train_val": 0,
+      "n_pass_g1_all_slices": 0,
+      "verdict": "locked symmetric R:R destroys VAL/HOLDOUT generalization"
+    },
+    "wr_pressure": {
+      "n_seeds": 10,
+      "n_wr_pass_TRAIN": 10,
+      "n_wr_pass_VAL": 8,
+      "n_sharpe_ci_pass_VAL": 0,
+      "n_both_gates_pass_VAL": 0,
+      "verdict": "WR gate reachable but no seed passes both Gate 1 and Gate 2 on VAL"
+    }
+  },
+  "sources": {
+    "audit": "results\\bots\\bot_v3_seed7_candidate_audit.json",
+    "cost_stress": "results\\bots\\bot_v3_seed7_candidate_cost_stress.json",
+    "drift": "results\\bots\\bot_v3_seed7_candidate_holdout_drift.json",
+    "ablation": "results\\bots\\bot_v3_seed7_candidate_ablation.json",
+    "monte_carlo": "results\\monte_carlo\\bot_v3_seed7_candidate_mc.json"
+  }
+}

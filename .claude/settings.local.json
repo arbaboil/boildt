@@ -17,7 +17,16 @@
       "Bash(git rm *)",
       "Bash(git commit -m ' *)",
       "Bash(tasklist /fi \"imagename eq python.exe\")",
-      "Bash(tasklist //fi \"imagename eq python.exe\")"
+      "Bash(tasklist //fi \"imagename eq python.exe\")",
+      "Bash(mkdir -p logs)",
+      "Bash(python scripts/freshseed_sweep.py --seeds 1-20 --workers 8 --out bot_v2_freshseed_sweep.json)",
+      "Bash(powershell *)",
+      "PowerShell(Get-Process | Where-Object ProcessName -eq 'python' | Format-Table Id,ProcessName,StartTime -AutoSize; if \\(-not \\(Get-Process -Name python -ErrorAction SilentlyContinue\\)\\) { 'no python processes' })",
+      "Bash(rm -rf results/bots/freshseed)",
+      "Bash(rm -f results/bots/bot_v2_freshseed_smoke.json)",
+      "Bash(gh auth *)",
+      "Bash(tasklist //FI \"IMAGENAME eq python.exe\")",
+      "Bash(tasklist //FI \"IMAGENAME eq python.exe\" //V)"
     ]
   }
 }

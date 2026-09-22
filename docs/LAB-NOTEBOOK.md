@@ -352,3 +352,67 @@ Fill every gap that doesn't require Owner input.
 5. Weekly-emit cron / GitHub Action once repo is on GitHub.
 
 ---
+
+## 2026-09-22 — Session 3 — WR-pressure sweep + ship-readiness dashboard
+
+**Intent.** Close the WR-gate question definitively; consolidate all
+evidence into a single decision artifact for Owner PROTOCOL v0.2.0
+sign-off.
+
+**Work done:**
+- Executed `scripts/wr_pressure_sweep.py` on seeds 21-30 (10 seeds,
+  6 workers, ~18 min wall clock). Fitness = worst-fold Calmar minus
+  15 × max(0, 0.55 − min-fold WR). Result: 10/10 pass TRAIN WR ≥ 50%,
+  8/10 pass VAL WR ≥ 50% — but **0/10 pass Gate 1 (Sharpe CI-low > 0)
+  on VAL**. All VAL CI-lows negative (-0.16 to -0.76). Symmetric R:R
+  reached WR-friendliness at the cost of Sharpe-CI generalization.
+- Also validated (from session 2 continuation) the engine v0.2 sweep
+  (12 seeds, locked TradeConfig 1.5/3.0): 0/12 pass Sharpe CI on
+  VAL/HOLDOUT. Locked symmetric R:R destroys generalization.
+- Combined evidence: **42 candidate seeds across 3 orthogonal search
+  strategies, 0 pass both Gate 1 AND Gate 2 on VAL simultaneously.**
+  Structural mutual exclusion of the two gates on oil's signal
+  manifold. See `memory/feedback_wr_gate_structural_2026-09-22.md`
+  for the definitive summary.
+- `scripts/ship_readiness.py` — new consolidated dashboard. Aggregates
+  candidate audit, cost stress, holdout drift, Monte Carlo, shadow
+  log status, and all three sweep summaries into a single JSON
+  report + human-readable table. Green-lights only when v0.2.0
+  signed AND ≥28 shadow days logged. Exit code 0 = ready, 2 = blocked.
+- `tests/test_ship_readiness.py` — 15 tests. Coverage: missing artifact
+  handling, malformed JSON, gate matrix extraction, Gate 2b
+  payoff-adjusted-WR invariant, drift/cost/Monte Carlo/shadow
+  summarizers, and — critically — the "WR gate reachable but Gate 1
+  fails" verdict path.
+- `docs/SESSION3-REPORT.md` — consolidated evidence bundle for Owner's
+  PROTOCOL v0.2.0 sign-off. TL;DR + candidate summary + all three
+  sweep tables + verdict + owner-blocked open-items.
+
+**Tests.** 53 → 68 total (up 15). All green.
+
+**Ship readiness after session 3:**
+- Engine v0.1: 60% → 65% (engine ships reads not trades; VoteConfig
+  aligned to seed 7 via emitter)
+- Bot line (v3 seed 7): 85% → 90% (all evidence consolidated;
+  dashboard provides machine-readable ship verdict)
+- Site integration prep: 60% → 65% (dashboard)
+- Ship gates + protocol discipline: 95% (unchanged; discipline held)
+- Overall: ~60% → ~68%.
+
+**Still owner-blocked (unchanged from session 2):**
+- Sign / reject PROTOCOL v0.2.0 (`docs/SESSION3-REPORT.md` is the
+  artifact for review)
+- EIA API key
+- GitHub remote
+- Vega handoff clearance
+
+**Next session TODO:**
+1. Await owner's PROTOCOL call.
+2. If approved: bump `PROTOCOL.md` 0.1.0 → 0.2.0, rewire
+   `candidate_audit.py` and `ship_readiness.py` to treat v0.2.0 as
+   canonical, continue shadow window (26 days remaining), package
+   handoff pack.
+3. If rejected: fall back to engine-only ship using seed 7 VoteConfig
+   as the signal producer; document why the bot ship is deferred.
+
+---
