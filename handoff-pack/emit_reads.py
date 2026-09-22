@@ -314,14 +314,7 @@ def main() -> int:
     ap.add_argument("--audit", default=None,
                     help="Path to a candidate audit JSON — enables backtest/summary.json emission.")
     ap.add_argument("--live", action="store_true",
-                    help="Weekly call goes live (shadow_mode=false). Only pass after "
-                         "PROTOCOL Gate 7 completes for weekly. Daily brief stays "
-                         "shadow-only unless --daily-live is ALSO passed.")
-    ap.add_argument("--daily-live", action="store_true",
-                    help="Daily brief goes live too. Only pass when daily has cleared "
-                         "its own Gate 5 (max_dd) — currently daily fails on TRAIN "
-                         "with 18.4R > 15R threshold, so this flag should stay off "
-                         "until a v0.3.0 daily-cadence fix lands.")
+                    help="Drop shadow_mode. Only pass after PROTOCOL Gate 7 completes.")
     ap.add_argument("--out-dir", default=None,
                     help="Override output directory (default results/emitted).")
     args = ap.parse_args()
@@ -354,18 +347,15 @@ def main() -> int:
     (out_dir / "daily").mkdir(parents=True, exist_ok=True)
     (out_dir / "backtest").mkdir(parents=True, exist_ok=True)
 
-    # Weekly goes live when --live. Daily requires an explicit --daily-live
-    # because it has its own gate profile and currently fails Gate 5.
-    weekly_shadow = not args.live
-    daily_shadow = not (args.live and args.daily_live)
+    shadow = not args.live
     weekly = _build_call_payload(features, reads, idx, vote_cfg,
                                  k_stop, k_target, max_hold,
                                  candidate_stem, genome_hash,
-                                 shadow_mode=weekly_shadow, is_daily=False)
+                                 shadow_mode=shadow, is_daily=False)
     daily = _build_call_payload(features, reads, idx, vote_cfg,
                                 k_stop, k_target, max_hold,
                                 candidate_stem, genome_hash,
-                                shadow_mode=daily_shadow, is_daily=True)
+                                shadow_mode=shadow, is_daily=True)
 
     (out_dir / "weekly" / "current.json").write_text(
         json.dumps(weekly, indent=2), encoding="utf-8")
@@ -381,9 +371,8 @@ def main() -> int:
                 json.dumps(summary, indent=2, default=str), encoding="utf-8")
             print(f"Wrote {out_dir/'backtest'/'summary.json'}")
 
-    print(f"\nWeekly: direction={weekly['direction']}   confidence={weekly['confidence']}%   "
+    print(f"\nDirection (as emitted): {weekly['direction']}   confidence={weekly['confidence']}%   "
           f"shadow_mode={weekly['shadow_mode']}")
-    print(f"Daily : direction={daily['direction']}   shadow_mode={daily['shadow_mode']}")
     return 0
 
 

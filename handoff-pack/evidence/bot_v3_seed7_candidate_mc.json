@@ -1,0 +1,60 @@
+{
+  "candidate_source": "results\\bots\\bot_v3_seed7_candidate.json",
+  "n_historical_trades": 386,
+  "baseline": {
+    "horizon_trades": 40,
+    "n_paths": 10000,
+    "stress_slippage_bps_extra": 0.0,
+    "trades_sampled_from": 386,
+    "mean_r_per_trade_after_stress": 1.051427174806954,
+    "final_r": {
+      "median": 41.6181207940907,
+      "p05": 10.897295137721374,
+      "p25": 28.778921869870352,
+      "p75": 55.004827816057734,
+      "p95": 74.78141547791286,
+      "mean": 42.1421441992341
+    },
+    "max_dd_r": {
+      "median": 7.121968834749173,
+      "p75": 9.140986771329084,
+      "p95": 13.517137316814047,
+      "p99": 17.83928055583532,
+      "max": 28.39057376975278
+    },
+    "prob_positive_final_r": 0.9886,
+    "prob_final_r_ge_10": 0.9557,
+    "prob_final_r_ge_30": 0.7289,
+    "prob_max_dd_ge_15": 0.0299,
+    "prob_max_dd_ge_25": 0.0006,
+    "prob_ruin": 0.0
+  },
+  "stress_extra_5bps": {
+    "horizon_trades": 40,
+    "n_paths": 10000,
+    "stress_slippage_bps_extra": 5.0,
+    "trades_sampled_from": 386,
+    "mean_r_per_trade_after_stress": 1.001427174806954,
+    "final_r": {
+      "median": 39.6181207940907,
+      "p05": 8.897295137721372,
+      "p25": 26.778921869870356,
+      "p75": 53.00482781605775,
+      "p95": 72.78141547791287,
+      "mean": 40.1421441992341
+    },
+    "max_dd_r": {
+      "median": 7.592028805264434,
+      "p75": 9.737830357505267,
+      "p95": 14.428350216303809,
+      "p99": 18.93175620714769,
+      "max": 29.840573769752776
+    },
+    "prob_positive_final_r": 0.9848,
+    "prob_final_r_ge_10": 0.9432,
+    "prob_final_r_ge_30": 0.6942,
+    "prob_max_dd_ge_15": 0.04,
+    "prob_max_dd_ge_25": 0.0011,
+    "prob_ruin": 0.0
+  }
+}

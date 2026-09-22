@@ -2,28 +2,15 @@
 
 **Prepared for:** Owner
 **Prepared by:** Helios
-**Date:** 2026-09-22 (updated after PROTOCOL v0.2.0 approval + EIA wire + daily cron setup)
-**Purpose:** Ship-readiness snapshot post-approval. Sealed for the Vega handoff pack.
-
-## Status (post-approval)
-
-- **PROTOCOL v0.2.0**: LOCKED (Owner approved 2026-09-22). `docs/PROTOCOL.md` updated in place. Gate 2 (WR ≥ 50%) retired; replaced by Gate 2a (expectancy CI > 0) + Gate 2b (mean_r_net ≥ 0.05).
-- **EIA API key**: wired via `.env`. Features rebuilt with 3 EIA-derived columns.
-- **GitHub remote**: `arbaboil/boildt`. All commits pushed. CI runs tests on every push.
-- **Daily cron**: `.github/workflows/daily.yml` fires at 21:00 UTC daily. Confirmed first run 2026-09-22 green. Shadow-log entries accumulate automatically.
-- **Ship candidate**: bot v3 seed 7 passes strict v0.2.0 on TRAIN + VAL + HOLDOUT.
-- **Only remaining ship blocker**: Gate 7 shadow window (~26 calendar days).
-- **Expected ship day**: 2026-10-20.
-- **Vega handoff pack**: sealed at `handoff-pack/` in this repo, ready to relay on ship day.
+**Date:** 2026-09-22
+**Purpose:** Consolidate all evidence for the PROTOCOL v0.2.0 sign-off decision, plus provide the definitive ship-readiness snapshot.
 
 ## TL;DR
 
 Bot v3 seed 7 is a clean asymmetric-R:R (RR ≈ 6.2) trend/momentum/curve
-consensus strategy that **passes every automatable ship gate under
-PROTOCOL v0.2.0 on all three slices**. Under the retired PROTOCOL
-v0.1.0 (Gate 2 = WR ≥ 50%) it would have been blocked. Four independent
-evolutionary strategies were run to prove the WR gate was structurally
-unreachable on oil:
+consensus strategy that **passes every automatable ship gate except Gate
+2 (Directional WR ≥ 50%)**. Three independent evolutionary strategies
+were run to test whether the WR gate is reachable at all on oil:
 
 | Sweep | Fitness | R:R constraint | Seeds | Pass WR TRAIN | Pass Sharpe CI all slices |
 |---|---|---|---|---|---|
@@ -36,9 +23,10 @@ Symmetric R:R (WR-friendly) either fails to generalize (engine v0.2:
 positive TRAIN CI, negative VAL+HOLDOUT) or the GA cannot find a genome
 that satisfies both edge and WR ≥ 50% (fresh-seed and WR-pressure).
 
-**Recommendation IMPLEMENTED:** PROTOCOL v0.2.0 was approved by Owner
-on 2026-09-22 and merged into `docs/PROTOCOL.md`. Gate 7 shadow window
-started; expected clear 2026-10-20.
+Recommendation: **sign PROTOCOL v0.2.0** (mean-R invariant replaces WR
+gate), which unblocks the Gate 7 shadow window for seed 7. Under the
+proposed v0.2.0 gates, seed 7 already passes all offline checks including
+Gate 2b (mean_r_net > 0.05R on all three slices: +1.14 / +0.88 / +0.97).
 
 ## 1. Candidate — Bot v3 Seed 7
 

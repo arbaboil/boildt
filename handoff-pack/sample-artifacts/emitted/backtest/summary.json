@@ -1,7 +1,7 @@
 {
   "type": "backtest_summary",
   "schema_version": 1,
-  "candidate": "bot_v3_seed7_candidate",
+  "candidate": "results\\bots\\bot_v3_seed7_candidate",
   "protocol_version": "0.1.0",
   "slices": {
     "TRAIN": {
