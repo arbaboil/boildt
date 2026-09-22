@@ -322,6 +322,7 @@ def main() -> int:
     alts = _load(RESULTS / "bots" / "alt_strategy_sweep.json")
     sig_qual = _load(RESULTS / "engine_signal_quality.json")
     brent_val = _load(RESULTS / "bots" / f"{stem}_brent_validation.json")
+    sensitivity = _load(RESULTS / "bots" / f"{stem}_sensitivity.json")
 
     audit_row = _audit_row(audit)
     gate_2b = _payoff_adjusted_wr_invariant(audit)
@@ -353,6 +354,17 @@ def main() -> int:
                 "e4_stability_ge_70pct": s["stability"] >= 0.70,
             }
 
+    # Genome sensitivity — is the tuned genome knife-edge?
+    sensitivity_summary: dict | None = None
+    if sensitivity is not None:
+        v = sensitivity.get("verdict", {})
+        sensitivity_summary = {
+            "n_perturbations": v.get("n_perturbations"),
+            "n_val_ci_flipped_negative": v.get("n_val_ci_flipped_negative"),
+            "robust": v.get("robust"),
+            "assessment": v.get("assessment"),
+        }
+
     # Cross-crude Brent validation (external instrument test).
     brent_summary: dict | None = None
     if brent_val is not None:
@@ -379,6 +391,7 @@ def main() -> int:
         "shadow": shadow,
         "sweep_evidence": sweeps,
         "brent_cross_validation": brent_summary,
+        "sensitivity": sensitivity_summary,
         "engine_only_signal_quality": sig_qual_summary,
         "sources": {
             "audit": str((RESULTS / "bots" / f"{stem}_audit.json").relative_to(REPO)),
@@ -432,6 +445,12 @@ def main() -> int:
         for k, v in s.items():
             print(f"    {k:30s}  {v}")
     print()
+    if sensitivity_summary is not None:
+        print("GENOME SENSITIVITY (robustness):")
+        for k, v in sensitivity_summary.items():
+            print(f"  {k:32s}  {v}")
+        print()
+
     if brent_summary is not None:
         print("BRENT CROSS-CRUDE VALIDATION (external instrument):")
         print(f"  verdict: {brent_summary['verdict']}")

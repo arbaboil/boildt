@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-22T12:50:06+00:00",
+  "generated_at_utc": "2026-09-22T12:53:48+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v010": false,
@@ -147,6 +147,12 @@
         "sharpe_ci_low": 0.4055045676127573
       }
     }
+  },
+  "sensitivity": {
+    "n_perturbations": 75,
+    "n_val_ci_flipped_negative": 0,
+    "robust": true,
+    "assessment": "ROBUST \u2014 all perturbations keep VAL Sharpe CI positive"
   },
   "engine_only_signal_quality": {
     "source": "candidate:bot_v3_seed7_candidate",
