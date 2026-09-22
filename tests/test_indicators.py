@@ -52,3 +52,14 @@ def test_donchian_position_in_unit():
     valid = d.dropna()
     assert (valid >= 0).all()
     assert (valid <= 1.0 + 1e-9).all()
+
+
+def test_atr_from_close_populated_when_input_is_continuous():
+    # 100 clean bars → ATR fully populated after warm-up. atr_from_close
+    # does close.diff() (loses index 0) then rolling(20, min_periods=20),
+    # so the first valid ATR sits at index 20.
+    rng = np.random.default_rng(3)
+    s = pd.Series(100 + np.cumsum(rng.normal(0, 1, 100)), dtype=float)
+    atr = I.atr_from_close(s, 20)
+    assert atr.iloc[20:].notna().all()
+    assert (atr.iloc[20:] > 0).all()
