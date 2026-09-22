@@ -4,9 +4,9 @@
   "schema_version": 1,
   "instrument": "WTI",
   "signal_date_utc": "2026-09-22T00:00:00+00:00",
-  "published_utc": "2026-09-22T09:01:23+00:00",
-  "direction": "LONG",
-  "shadow_mode": false,
+  "published_utc": "2026-09-22T09:17:09+00:00",
+  "direction": "SHADOW",
+  "shadow_mode": true,
   "current_price": 93.30999755859375,
   "atr_20d": 2.139500122070314,
   "signal_components": {
@@ -48,9 +48,9 @@
   },
   "confidence": 82,
   "score": 0.4780222638488981,
-  "message": "3 components confirming long bias; 82% confidence.",
+  "message": "HELIOS shadow mode \u2014 this call resolves internally, not for member trading.",
   "primary_risk": {
-    "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
+    "sentence": "Shadow mode: no live position risk.",
     "severity": "med",
     "trigger": null
   },

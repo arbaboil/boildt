@@ -19,7 +19,7 @@ Ship floor: 80/100. Quant-fund standard: 90/100.
 
 ## Version log
 
-### v0.1 (scaffold — this session)
+### v0.1 (scaffold — session 1, 2026-09-18)
 
 | Category | Score | Notes |
 |---|---|---|
@@ -32,20 +32,41 @@ Ship floor: 80/100. Quant-fund standard: 90/100.
 | Cross-asset correlation | 5 | DXY + VIX + real yields in schema, joined |
 | **Total** | **37/100** | Scaffold. Not shippable. |
 
+### v0.2 (post-fix + full audit — session 2, 2026-09-22)
+
+| Category | Score | Delta | Notes |
+|---|---|---|---|
+| Look-ahead prevention | 17 | +9 | `vintage.safe_asof` enforced in features; forward-fill lock in `build_features` respects same-day-only; 3 regression tests including `test_no_lookahead_slope_shape` |
+| Fill realism | 8 | +4 | Close-to-close still, but same-day stop+target ordering documented in `backtest.py` (stop wins ties). Holiday gaps now handled via ffill on indicators, raw close preserved for gating. Intrabar still Phase 5. |
+| Cost realism | 12 | +4 | Cost model vol-scaled (log2 doublings above 20d median). Stress-tested at 2x and 3x — bot v3 seed 7 maintains Sharpe CI > 0 across all slices even at 3x cost. |
+| Microstructure | 3 | +1 | priceStep-style bounds enforced (0.5–1.5× price for stops, 0.5–10% ATR pct). Still no order-book depth model. |
+| World-state fidelity | 12 | +6 | Pulled: FRED (WTI/Brent/DXY/real-yield/VIX/YC/INDPRO/HY_OAS), Yahoo (WTI/Brent/OVX/DXY/VIX/SP500/HO/RB/NG), CFTC COT (WTI 817 wks + Brent 240 wks), Baker Hughes. Missing: EIA (needs API key from owner), OPEC monthly PDF, GDELT, NOAA. |
+| Statistical validity | 14 | +10 | Live: 5000-sample block-bootstrap CI on Sharpe + expectancy; 1000-permutation p-value on all three slices; K=10 walk-forward; 20-seed fresh-seed retest with roll-up gate rates; 10k-path Monte Carlo forward CIs with stress variant; Gate B6 regime-consistency check. Holdout locked and never touched during evolution. |
+| Cross-asset correlation | 8 | +3 | DXY, VIX, real-yield-10y, INDPRO YoY, HY OAS, SP500 20d return all wired into feature matrix. Missing: ISM, China PMI, Baltic Dry Index. |
+| **Total** | **74/100** | **+37** | Approaching ship floor (80). Under PROTOCOL v0.2.0 with EIA + intrabar upgrade this reaches ~85. |
+
 ### Roadmap to 80+
 
-Ordered by effort / impact ratio:
+Original session-1 roadmap. Items marked ✓ landed in session 2.
 
-1. **+8 look-ahead** — wire `safe_asof(source, date)` into every feature
-2. **+8 fill realism** — intrabar iteration + gap-through + wick-stop
-3. **+8 world-state** — pull EIA + COT + OPEC + Baker Hughes + GDELT + NOAA
-4. **+7 cost realism** — vol-scaled slippage curve
-5. **+7 statistical validity** — walk-forward K-fold, permutation test, block bootstrap
-6. **+5 cross-asset** — additional macro (ISM, INDPRO, credit spread)
+1. ✓ **+8 look-ahead** — `vintage.safe_asof` + ffill locks + no-lookahead tests
+2. **+8 fill realism** — intrabar iteration + gap-through + wick-stop (Phase 5)
+3. **+3 world-state** — EIA weekly petroleum status (needs owner API key);
+   OPEC + GDELT + NOAA still not pulled
+4. ✓ **+4 cost realism** — vol-scaled slippage curve + 2x/3x stress tests
+5. ✓ **+10 statistical validity** — walk-forward K-fold, permutation,
+   block bootstrap, MC, Gate B6, HOLDOUT drift
+6. **+3 cross-asset** — ISM, China PMI, Baltic Dry Index
 7. **+3 microstructure** — bid-ask model, position-size impact
-8. **+2 fill realism** — same-bar exit rules exactly documented
+8. **+2 fill realism** — same-bar exit rules documented → done inline in
+   `backtest.py`; regression test would nudge this to +3
 
-Total roadmap: +48 → 85/100 target for v0.5 (ship candidate).
+Remaining path 74 → 85+:
+- EIA API key: unlocks +3 world-state → 77
+- Intrabar fills (Phase 5): +6 fill realism → 83
+- Additional macro (ISM/PMI/BDI): +3 cross-asset → 86
+- Microstructure v0.1 (spread model): +2 → 88
+- Documented same-bar tests: +1 → 89
 
 ## Explicitly out of scope (documented gaps)
 

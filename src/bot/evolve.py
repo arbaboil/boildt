@@ -30,19 +30,30 @@ COVERAGE_PENALTY = 8.0     # subtracted per missing fold
 def evaluate(genome: dict[str, float], features: pd.DataFrame,
              ranges: list[tuple[pd.Timestamp, pd.Timestamp]],
              wr_target: float = 0.0,
-             wr_penalty_scale: float = 0.0) -> dict[str, Any]:
+             wr_penalty_scale: float = 0.0,
+             trade_cfg_override: Any = None) -> dict[str, Any]:
     """Evaluate a genome on K folds.
 
     Fitness variants:
     - Default (`wr_penalty_scale=0`): worst-fold Calmar. This is bot v2's
       fitness — geometry-agnostic, picks the best risk-adjusted return
       without regard to WR. Discovers asymmetric-R:R strategies.
-    - v3 style (`wr_penalty_scale>0, wr_target≈0.50`): worst-fold Calmar
+    - v3 style (`wr_penalty_scale>0, wr_target~0.50`): worst-fold Calmar
       minus a penalty proportional to the min-across-folds WR shortfall
       below `wr_target`. Pushes evolution toward symmetric-R:R geometries
       that clear PROTOCOL gate 2.
+
+    Trade config lock:
+    - Default: derived from the genome (v3 seed 7 style — k_stop/k_target/
+      max_hold_days part of search).
+    - `trade_cfg_override`: replaces genome-derived TradeConfig with a
+      fixed one. Used by engine-only tuning (v0.2) that locks
+      k_stop=1.5, k_target=3.0, max_hold_days=20 (AXIS-shape) and
+      searches only VoteConfig.
     """
     vote_cfg, trade_cfg = genome_to_configs(genome)
+    if trade_cfg_override is not None:
+        trade_cfg = trade_cfg_override
     reads = score_matrix(features, vote_cfg)
     joined = features.merge(reads[["date", "read", "confidence", "score", "coverage"]],
                             on="date", how="left")
@@ -126,6 +137,7 @@ def evolve(features: pd.DataFrame,
            seed: int = 42,
            wr_target: float = 0.0,
            wr_penalty_scale: float = 0.0,
+           trade_cfg_override: Any = None,
            verbose: bool = True) -> dict[str, Any]:
     rng = np.random.default_rng(seed)
     ranges = kfold_ranges(features["date"], k=k_folds)
@@ -142,7 +154,8 @@ def evolve(features: pd.DataFrame,
         for i in range(pop_size):
             reports[i] = evaluate(pop[i], features, ranges,
                                   wr_target=wr_target,
-                                  wr_penalty_scale=wr_penalty_scale)
+                                  wr_penalty_scale=wr_penalty_scale,
+                                  trade_cfg_override=trade_cfg_override)
             fits[i] = reports[i]["fitness"]
         order = np.argsort(fits)[::-1]
         best = order[0]
