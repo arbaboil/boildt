@@ -5,6 +5,20 @@ name: daily-shadow-log
 #
 # Schedule: 21:00 UTC daily (post US-close). Also manually triggerable
 # via the "Run workflow" button in the GitHub Actions tab.
+#
+# ============================================================
+# HOW TO FLIP LIVE ON SHIP DAY (2026-10-20 approx)
+# ============================================================
+# 1. Verify Gate 7 cleared: run ship_readiness.py locally or check
+#    latest ship_readiness.json in main. Confirm green_light: true
+#    and shadow.n_days >= 28.
+# 2. In the "Run daily pipeline" step below, append --live to the
+#    command. Daily brief stays shadow-only automatically (--live
+#    only flips weekly; daily needs a separate --daily-live which we
+#    do NOT pass until a v0.3.0 daily-cadence Gate 5 fix lands).
+# 3. Commit + push. Next cron run flips weekly to live.
+# 4. Then follow handoff-pack/VEGA-MESSAGE.md to relay to Vega.
+# ============================================================
 
 on:
   schedule:
