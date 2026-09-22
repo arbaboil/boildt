@@ -289,6 +289,7 @@ def main() -> int:
     fresh = _load(RESULTS / "bots" / "bot_v2_freshseed_sweep.json")
     eng2 = _load(RESULTS / "bots" / "engine_v02_sweep.json")
     wrp = _load(RESULTS / "bots" / "wr_pressure_sweep.json")
+    sig_qual = _load(RESULTS / "engine_signal_quality.json")
 
     audit_row = _audit_row(audit)
     gate_2b = _payoff_adjusted_wr_invariant(audit)
@@ -301,6 +302,25 @@ def main() -> int:
     verdict = _readiness_verdict(audit_row, drift_sum, cost_sum, mc_sum, shadow,
                                    protocol_signed=args.protocol_signed)
 
+    # Engine-only ship-path signal quality (Plan B if v0.2.0 rejected).
+    sig_qual_summary: dict | None = None
+    if sig_qual is not None:
+        sig_qual_summary = {"source": sig_qual.get("source")}
+        for s in sig_qual.get("slices", []):
+            sig_qual_summary[s["slice"]] = {
+                "coverage": round(s["coverage"], 3),
+                "stability": round(s["stability"], 3),
+                "wr_5d": s["directional_accuracy_5d"].get("directional_wr"),
+                "ic_5d": s["ic"].get("ic_5d", {}).get("ic"),
+                "ic_20d": s["ic"].get("ic_20d", {}).get("ic"),
+                # Engine-only gates E1-E4
+                "e1_wr_ge_50": s["directional_accuracy_5d"].get("directional_wr", 0) >= 0.50
+                                if s["directional_accuracy_5d"].get("directional_wr") is not None else None,
+                "e2_ic5d_positive": (s["ic"].get("ic_5d", {}).get("ic") or -1) > 0,
+                "e3_coverage_ge_30pct": s["coverage"] >= 0.30,
+                "e4_stability_ge_70pct": s["stability"] >= 0.70,
+            }
+
     report = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "candidate_stem": stem,
@@ -312,6 +332,7 @@ def main() -> int:
         "monte_carlo": mc_sum,
         "shadow": shadow,
         "sweep_evidence": sweeps,
+        "engine_only_signal_quality": sig_qual_summary,
         "sources": {
             "audit": str((RESULTS / "bots" / f"{stem}_audit.json").relative_to(REPO)),
             "cost_stress": str((RESULTS / "bots" / f"{stem}_cost_stress.json").relative_to(REPO)) if cost else None,
@@ -364,6 +385,19 @@ def main() -> int:
         for k, v in s.items():
             print(f"    {k:30s}  {v}")
     print()
+    if sig_qual_summary is not None:
+        print("ENGINE-ONLY SIGNAL QUALITY (Plan B if v0.2.0 rejected):")
+        for slice_name in ("TRAIN", "VALIDATION", "HOLDOUT"):
+            g = sig_qual_summary.get(slice_name)
+            if g is None:
+                continue
+            print(f"  {slice_name:12s}  coverage={g['coverage']:.0%}  stability={g['stability']:.0%}  "
+                  f"WR_5d={_fmt(g['wr_5d'], '.1%')}  ic_5d={_fmt(g['ic_5d'], '+.4f')}  "
+                  f"ic_20d={_fmt(g['ic_20d'], '+.4f')}")
+            print(f"    E1_wr50={_fmt(g['e1_wr_ge_50'])}  E2_ic>0={_fmt(g['e2_ic5d_positive'])}  "
+                  f"E3_cov30={_fmt(g['e3_coverage_ge_30pct'])}  E4_stab70={_fmt(g['e4_stability_ge_70pct'])}")
+        print()
+
     print("=== VERDICT ===")
     print(f"  ready_v010:    {_fmt(verdict['ready_v010'])}")
     print(f"  ready_v020:    {_fmt(verdict['ready_v020'])}")

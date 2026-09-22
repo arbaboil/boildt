@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-22T09:59:22+00:00",
+  "generated_at_utc": "2026-09-22T10:11:06+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v010": false,
@@ -115,6 +115,42 @@
       "n_sharpe_ci_pass_VAL": 0,
       "n_both_gates_pass_VAL": 0,
       "verdict": "WR gate reachable but no seed passes both Gate 1 and Gate 2 on VAL"
+    }
+  },
+  "engine_only_signal_quality": {
+    "source": "candidate:bot_v3_seed7_candidate",
+    "TRAIN": {
+      "coverage": 0.4,
+      "stability": 0.899,
+      "wr_5d": 0.5444697833523375,
+      "ic_5d": 0.04263612632316369,
+      "ic_20d": 0.07296372357401534,
+      "e1_wr_ge_50": true,
+      "e2_ic5d_positive": true,
+      "e3_coverage_ge_30pct": true,
+      "e4_stability_ge_70pct": true
+    },
+    "VALIDATION": {
+      "coverage": 0.574,
+      "stability": 0.872,
+      "wr_5d": 0.5805991440798859,
+      "ic_5d": 0.07485003594018555,
+      "ic_20d": 0.13519802884353882,
+      "e1_wr_ge_50": true,
+      "e2_ic5d_positive": true,
+      "e3_coverage_ge_30pct": true,
+      "e4_stability_ge_70pct": true
+    },
+    "HOLDOUT": {
+      "coverage": 0.619,
+      "stability": 0.873,
+      "wr_5d": 0.5242718446601942,
+      "ic_5d": 0.08288091247361784,
+      "ic_20d": 0.056344406938431346,
+      "e1_wr_ge_50": true,
+      "e2_ic5d_positive": true,
+      "e3_coverage_ge_30pct": true,
+      "e4_stability_ge_70pct": true
     }
   },
   "sources": {

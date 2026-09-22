@@ -26,7 +26,9 @@
       "Bash(rm -f results/bots/bot_v2_freshseed_smoke.json)",
       "Bash(gh auth *)",
       "Bash(tasklist //FI \"IMAGENAME eq python.exe\")",
-      "Bash(tasklist //FI \"IMAGENAME eq python.exe\" //V)"
+      "Bash(tasklist //FI \"IMAGENAME eq python.exe\" //V)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/engine_signal_quality.py --candidate results/bots/bot_v3_seed7_candidate.json)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/ship_readiness.py)"
     ]
   }
 }
