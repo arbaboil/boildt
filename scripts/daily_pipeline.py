@@ -1,8 +1,8 @@
 """One-command daily pipeline for owner's cron.
 
 Sequence:
-  1. Pull fresh data (FRED + Yahoo + COT + Baker Hughes; skip Stooq;
-     skip EIA if no API key)
+  1. Pull fresh data (FRED + Yahoo + COT + Baker Hughes + EIA; skip Stooq
+     due to its JS challenge). EIA pulled when EIA_API_KEY is set in .env.
   2. Rebuild features
   3. Log a candidate-shadow entry (if a candidate is configured) plus
      an untuned-engine trace
@@ -59,8 +59,10 @@ def main() -> int:
     py = sys.executable
 
     if not args.skip_pull:
-        rc = _run([py, "scripts/pull_data.py", "--skip", "eia", "stooq"],
-                  "pull_data (skip EIA + stooq)")
+        # Skip Stooq (JS challenge). EIA runs if EIA_API_KEY is set; the
+        # eia puller no-ops silently when the key is missing.
+        rc = _run([py, "scripts/pull_data.py", "--skip", "stooq"],
+                  "pull_data (skip stooq)")
         if rc != 0:
             print("[warn] pull_data returned non-zero; continuing to features")
 
