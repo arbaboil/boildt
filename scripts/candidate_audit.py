@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.bot.genome import genome_to_configs
 from src.engine.regime_vote import score_matrix
+from src.features.regime_labels import label_regimes
 from src.sim.backtest import simulate
 from src.sim.metrics import (block_bootstrap_expectancy,
                              block_bootstrap_sharpe, compute,
@@ -43,7 +44,8 @@ VAL = ("2019-01-01", "2023-12-31")
 HOLDOUT_START = "2024-01-01"
 
 
-def _slice_report(joined: pd.DataFrame, tcfg, name: str, start: str, end: str) -> dict:
+def _slice_report(joined: pd.DataFrame, tcfg, name: str, start: str, end: str,
+                  regime_labels: pd.DataFrame | None = None) -> dict:
     lo = pd.to_datetime(start, utc=True)
     hi = pd.to_datetime(end, utc=True)
     slc = joined[(joined["date"] >= lo) & (joined["date"] <= hi)].reset_index(drop=True)
@@ -52,13 +54,45 @@ def _slice_report(joined: pd.DataFrame, tcfg, name: str, start: str, end: str) -
     boot = block_bootstrap_sharpe(trades, n_boot=5000, seed=1234)
     exp = block_bootstrap_expectancy(trades, n_boot=5000, seed=1234)
     perm = permutation_test(trades, n_perm=1000, seed=1234)
+    by_regime = _breakdown_by_regime(trades, regime_labels)
     return {
         "slice": name, "start": start, "end": end,
         "metrics": asdict(m),
         "bootstrap_sharpe": boot,
         "bootstrap_expectancy": exp,
         "permutation": perm,
+        "by_regime": by_regime,
     }
+
+
+def _breakdown_by_regime(trades: pd.DataFrame,
+                         regime_labels: pd.DataFrame | None) -> dict:
+    """For each of bull/chop/bear, compute n_trades, WR, mean R.
+
+    Assign each trade its regime based on the *entry_date* label. Trades
+    whose entry-date regime is 'unknown' (pre-warmup) are excluded.
+    """
+    if trades.empty or regime_labels is None:
+        return {"bull": None, "chop": None, "bear": None}
+    lab = regime_labels[["date", "regime"]].copy()
+    lab["date"] = pd.to_datetime(lab["date"])
+    t = trades.copy()
+    t["entry_date"] = pd.to_datetime(t["entry_date"])
+    merged = t.merge(lab, left_on="entry_date", right_on="date", how="left")
+    out: dict[str, dict | None] = {}
+    for r in ("bull", "chop", "bear"):
+        rows = merged[merged["regime"] == r]
+        if len(rows) == 0:
+            out[r] = None
+            continue
+        wins = (rows["r_net"] > 0).sum()
+        out[r] = {
+            "n_trades": int(len(rows)),
+            "wr": float(wins / len(rows)),
+            "mean_r_net": float(rows["r_net"].mean()),
+            "total_r_net": float(rows["r_net"].sum()),
+        }
+    return out
 
 
 def _pass(rep: dict) -> dict:
@@ -96,10 +130,17 @@ def main() -> int:
     )
 
     holdout_end = str(features["date"].max().date())
+
+    # Precompute regime labels once — used by Gate B6 breakdown per slice.
+    regime_labels = label_regimes(features)
+
     slices = [
-        _slice_report(joined, trade_cfg, "TRAIN", *TRAIN),
-        _slice_report(joined, trade_cfg, "VALIDATION", *VAL),
-        _slice_report(joined, trade_cfg, "HOLDOUT", HOLDOUT_START, holdout_end),
+        _slice_report(joined, trade_cfg, "TRAIN", *TRAIN,
+                      regime_labels=regime_labels),
+        _slice_report(joined, trade_cfg, "VALIDATION", *VAL,
+                      regime_labels=regime_labels),
+        _slice_report(joined, trade_cfg, "HOLDOUT", HOLDOUT_START, holdout_end,
+                      regime_labels=regime_labels),
     ]
 
     # Walk-forward K=10 on 2006-2023 (spans TRAIN + VAL)
@@ -109,6 +150,30 @@ def main() -> int:
 
     gates = {s["slice"]: _pass(s) for s in slices}
     gates["g4_walkforward_7of10"] = bool(wf["pass_7of10_rule"])
+
+    # Gate B6: regime consistency. Combine TRAIN + VAL trades (skip HOLDOUT
+    # to avoid leaking the audit slice into the decision), then require
+    # each of bull/chop/bear to have positive mean R with at least 5 trades.
+    combined = {}
+    for r in ("bull", "chop", "bear"):
+        agg_n = 0
+        agg_r = 0.0
+        for sname in ("TRAIN", "VALIDATION"):
+            reg = next(s for s in slices if s["slice"] == sname)["by_regime"].get(r)
+            if reg is None:
+                continue
+            agg_n += reg["n_trades"]
+            agg_r += reg["total_r_net"]
+        combined[r] = {
+            "n_trades": agg_n,
+            "mean_r_net": agg_r / agg_n if agg_n > 0 else None,
+        }
+    b6_pass = all(
+        combined[r]["n_trades"] >= 5 and combined[r]["mean_r_net"] is not None
+        and combined[r]["mean_r_net"] > 0
+        for r in ("bull", "chop", "bear")
+    )
+    gates["b6_regime_consistency"] = bool(b6_pass)
 
     # Roll-up: strict PROTOCOL v0.1.0
     strict_pass = (
@@ -136,6 +201,7 @@ def main() -> int:
         "candidate_source": str(cand_path),
         "genome": genome,
         "slices": slices,
+        "b6_regime_combined_train_val": combined,
         "walkforward": {
             "k": wf["k"],
             "positive_expectancy_folds": wf["positive_expectancy_folds"],
@@ -174,6 +240,14 @@ def main() -> int:
     print(f"WF: {wf['positive_expectancy_folds']}/10 positive-expectancy "
           f"({wf['positive_sharpe_folds']}/10 positive-Sharpe)  "
           f"g4={wf['pass_7of10_rule']}")
+    print()
+    print("B6 regime consistency (combined TRAIN+VAL):")
+    for r in ("bull", "chop", "bear"):
+        c = combined[r]
+        mr = c["mean_r_net"]
+        mr_s = f"{mr:+.3f}" if mr is not None else "  N/A"
+        print(f"  {r:6s}: n={c['n_trades']:3d}  mean R = {mr_s}")
+    print(f"  b6 pass: {b6_pass}")
     print()
     print(f"strict PROTOCOL v0.1.0 pass: {strict_pass}")
     print(f"proposed PROTOCOL v0.2.0 pass (no WR gate): {proposed_v020_pass}")

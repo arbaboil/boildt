@@ -1,0 +1,54 @@
+{
+  "type": "backtest_summary",
+  "schema_version": 1,
+  "candidate": "bot_v3_seed7_candidate",
+  "protocol_version": "0.1.0",
+  "slices": {
+    "TRAIN": {
+      "n": 238,
+      "wr": 0.37815126050420167,
+      "mean_r": 1.1427731862099852,
+      "sharpe": 1.6005763920296208,
+      "sharpe_ci_low": 1.1386380616760596,
+      "max_dd_r": 10.699479491829578,
+      "perm_p": 0.0
+    },
+    "VALIDATION": {
+      "n": 89,
+      "wr": 0.3258426966292135,
+      "mean_r": 0.8815068375413462,
+      "sharpe": 1.239891744380871,
+      "sharpe_ci_low": 0.43292649332247946,
+      "max_dd_r": 10.241443777918953,
+      "perm_p": 0.003
+    },
+    "HOLDOUT": {
+      "n": 58,
+      "wr": 0.3620689655172414,
+      "mean_r": 0.9732529125783472,
+      "sharpe": 1.4911036558420152,
+      "sharpe_ci_low": 0.605416191495693,
+      "max_dd_r": 6.785628976507233,
+      "perm_p": 0.008
+    }
+  },
+  "walkforward": {
+    "k": 10,
+    "positive_expectancy_folds": 10,
+    "pass_7of10_rule": true
+  },
+  "regime_by_regime": {
+    "bull": {
+      "n": 166,
+      "mean_r": 0.8618854228200598
+    },
+    "chop": {
+      "n": 62,
+      "mean_r": 1.5792164827135222
+    },
+    "bear": {
+      "n": 99,
+      "mean_r": 1.105552775179676
+    }
+  }
+}

@@ -8,3 +8,4 @@
 - [ATR ffill required through holidays](feedback_atr_ffill_indicators.md) — build_features must forward-fill price series or holiday NaN wipes rolling indicators. Session 1 backtests were on ~34% of real trade universe.
 - [Helios bot v3 candidate — seed 7](project_helios_bot_v3_2026-09-22.md) — post-fix winner from 20-seed sweep; Sharpe CI>0 on TRAIN+VAL+HOLDOUT; WF 10/10; blocked only by 50% WR gate (structural — 0/20 seeds pass WR).
 - [WR gate structurally unreachable for oil](feedback_wr_gate_structural_2026-09-22.md) — 20 independent GA seeds all converge to R:R 4-7 asymmetric strategies. Memo recommends Option B (expectancy-CI replacement).
+- [Session 2 extended state](project_helios_session2_state_2026-09-22.md) — Gate 6 passes on all slices; regime labels + Gate B6 pass; Monte Carlo says 0% ruin, 98.9% positive year; DATA-CONTRACT + emitter + HANDOFF + DEPLOY-PLAN all written. ~60% ready; blocked on Owner PROTOCOL sign-off.

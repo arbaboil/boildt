@@ -270,3 +270,85 @@ Option A after all.
    pursuing if the trend-follower fails HOLDOUT drift audits.
 
 ---
+
+## 2026-09-22 — Session 2 extended — Gate 6, regime labels, MC, handoff
+
+**Intent.** Owner asked to push toward "close to 100%" without shipping.
+Fill every gap that doesn't require Owner input.
+
+**Work done:**
+- Gate 6 permutation test on seed 7 candidate (all three slices): p=0.000
+  TRAIN, 0.003 VAL, 0.008 HOLDOUT — passes ≤ 0.05 on all. Wrote
+  `scripts/candidate_audit.py` — one-shot driver that runs every
+  automatable gate (1, 2, 3, 4, 5, 6, B6) on a candidate JSON.
+- `src/features/regime_labels.py` + 6 tests. Bull/chop/bear classifier
+  keyed on 200d slope + 60d realized-vol quartile. SLOPE_THRESHOLD =
+  0.030 $/day calibrated on real 2001-2026 WTI (bull 46% / chop 24% /
+  bear 30%).
+- Gate B6 (regime consistency) extension in `candidate_audit.py`. Seed
+  7 combined TRAIN+VAL: bull n=166 mean_R +0.86, chop n=62 mean_R
+  +1.58, bear n=99 mean_R +1.11. All positive across all three
+  regimes — passes.
+- Daily cadence retested on ATR-fixed data:
+  - Engine v0.1 defaults: Sharpe CI now +0.03 (was FAIL in Session 1);
+    permutation p=0.018; still fails WR and max_dd (26.3R).
+  - Bot v3 seed 7 forced to daily: Sharpe CI positive on all 3 slices,
+    perm p=0.000/0.000/0.011, TRAIN max_dd 18.4R fails Gate 5. Still
+    weekly-only for ship.
+  - Written up in `results/backtests/daily_cadence_summary.md`.
+- `docs/DATA-CONTRACT.md` — locked schemas for `weekly/current.json`,
+  `daily/current.json`, `history/index.json`, `backtest/summary.json`.
+  Modeled on AXIS emit.ts patterns; adapted names for oil.
+- `scripts/emit_reads.py` — contract-compliant emitter. Produces
+  weekly + daily + backtest summary from a candidate. Kill-switch
+  cascade: kill_switch > shadow_mode > bounds_violated > underlying.
+  priceStep-style bounds: reject ATR outside [0.5%, 10%] of price OR
+  suggested stop outside [0.5×, 1.5×] price.
+- `scripts/monte_carlo_paths.py` + `results/monte_carlo/bot_v3_seed7_
+  candidate_mc.json`. Bootstrap resampled the empirical trade
+  distribution into 10k forward paths of 40 trades (~1 year weekly):
+  - 98.9% probability of positive year
+  - Median expected +41.6R (5-95% CI [+10.9, +74.8])
+  - 95th percentile drawdown: 13.5R (within 15R gate); 99th: 17.8R
+  - 0.00% probability of ruin (dd ≥ 50R)
+  - Under stress (+5 bps extra slippage per trade): 98.5% pos, 0.00% ruin
+- `docs/HANDOFF.md` — what Vega needs to integrate HELIOS into
+  `web/`. Mirrors AXIS integration pattern.
+- `docs/DEPLOY-PLAN.md` — ship prerequisites, deploy sequence,
+  kill-switch spec (Owner-only R2 admin key with cascade behavior),
+  operator-ban / role-separation, priceStep bounds, monitoring, rollback.
+- 10-test suite `tests/test_emit_reads.py` covering bounds guards +
+  kill-switch behavior (missing file, disabled, enabled, expired,
+  malformed → all handled fail-safe).
+
+**Tests.** 53 total (up from 37 at session-2 open). All green.
+
+**Ship readiness after this batch:**
+- Engine: 40% → 60% (walk-forward passes 9/10; still lacks a tuned
+  VoteConfig that clears strict CI; blocked on same WR-gate issue)
+- Bot line: 60% → 85%. Seed 7 clears all automatable gates
+  (Sharpe CI, WR-substitute expectancy CI, n, WF, max_dd,
+  permutation, regime consistency, Monte Carlo path robustness).
+  Only Gate 7 (shadow window) and Gate 2 (WR under v0.1.0) remain.
+- Site integration prep: 0% → 60%. Schemas locked, emitter written,
+  handoff pack + deploy plan drafted.
+- Overall: ~35% → ~60% ready.
+
+**Still blocked on Owner:**
+- PROTOCOL v0.2.0 sign-off
+- EIA API key
+- Hand this pack to Vega
+
+**Next session TODO (revised).**
+1. Owner: sign or reject PROTOCOL v0.2.0.
+2. If signed: start Gate 7 shadow window (nightly `shadow_log.py
+   --candidate ...` for 4 weeks).
+3. EIA API key from Owner → replace naive weekly-diff with real
+   consensus-vs-actual surprise; retest v3 and see if the new feature
+   materially improves any slice.
+4. Consider engine v0.2 as an explicit VoteConfig-only search
+   (fix TradeConfig to symmetric 1.5/3.0, evolve only the vote
+   weights). Could ship the engine even if the bot line is stuck.
+5. Weekly-emit cron / GitHub Action once repo is on GitHub.
+
+---

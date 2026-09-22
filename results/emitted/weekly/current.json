@@ -1,0 +1,84 @@
+{
+  "type": "call",
+  "week_of": "2026-09-21",
+  "week_end": "2026-09-27",
+  "schema_version": 1,
+  "instrument": "WTI",
+  "signal_date_utc": "2026-09-22T00:00:00+00:00",
+  "published_utc": "2026-09-22T09:01:23+00:00",
+  "direction": "LONG",
+  "shadow_mode": false,
+  "current_price": 93.30999755859375,
+  "atr_20d": 2.139500122070314,
+  "signal_components": {
+    "trend": {
+      "vote": 1,
+      "weight": 0.6056043325584309,
+      "value": 0.40120713759782006
+    },
+    "momentum": {
+      "vote": 1,
+      "weight": 1.3157410969052088,
+      "value": 0.10630164360830444
+    },
+    "vol": {
+      "vote": 0,
+      "weight": 2.1029564843449426,
+      "value": -0.5766396669511451
+    },
+    "curve": {
+      "vote": 1,
+      "weight": 3.8289714850102854,
+      "value": 0.3224066634937564
+    },
+    "cot": {
+      "vote": 0,
+      "weight": 0.9811580065464809,
+      "value": null
+    },
+    "eia": {
+      "vote": 0,
+      "weight": 1.1274738072894082,
+      "value": null
+    },
+    "macro": {
+      "vote": 0,
+      "weight": 2.0674861972223137,
+      "value": 0.010810161231266359
+    }
+  },
+  "confidence": 82,
+  "score": 0.4780222638488981,
+  "message": "3 components confirming long bias; 82% confidence.",
+  "primary_risk": {
+    "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
+    "severity": "med",
+    "trigger": null
+  },
+  "provenance": {
+    "candidate": "bot_v3_seed7_candidate",
+    "protocol_version": "0.1.0",
+    "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
+    "coverage": 0.8247100171580968,
+    "null_components": [
+      "cot",
+      "eia"
+    ],
+    "helios_version": "0.1.0",
+    "kill_switch_engaged": false,
+    "kill_switch_reason": null,
+    "bounds_violated": false,
+    "bounds_reason": null
+  },
+  "live_pnl_pct": null,
+  "live_updated_utc": null,
+  "outcome": null,
+  "levels": {
+    "stop_atr_mult": 0.7539798569451991,
+    "target_atr_mult": 4.692845101573669,
+    "hold_days_max": 11,
+    "suggested_entry_price": 93.30999755859375,
+    "suggested_stop_price_at_entry": 91.69685756262093,
+    "suggested_target_price_at_entry": 103.35034022626769
+  }
+}

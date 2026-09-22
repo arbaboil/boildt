@@ -67,6 +67,26 @@
         "p_value": 0.0,
         "observed_mean": 1.1427731862099852,
         "n_perm": 1000
+      },
+      "by_regime": {
+        "bull": {
+          "n_trades": 117,
+          "wr": 0.3333333333333333,
+          "mean_r_net": 0.9099029121234588,
+          "total_r_net": 106.45864071844467
+        },
+        "chop": {
+          "n_trades": 49,
+          "wr": 0.40816326530612246,
+          "mean_r_net": 1.4082906717495207,
+          "total_r_net": 69.00624291572652
+        },
+        "bear": {
+          "n_trades": 72,
+          "wr": 0.4305555555555556,
+          "mean_r_net": 1.3404879817195172,
+          "total_r_net": 96.51513468380524
+        }
       }
     },
     {
@@ -110,6 +130,26 @@
         "p_value": 0.003,
         "observed_mean": 0.8815068375413462,
         "n_perm": 1000
+      },
+      "by_regime": {
+        "bull": {
+          "n_trades": 49,
+          "wr": 0.30612244897959184,
+          "mean_r_net": 0.7472314177486783,
+          "total_r_net": 36.614339469685234
+        },
+        "chop": {
+          "n_trades": 13,
+          "wr": 0.46153846153846156,
+          "mean_r_net": 2.2234753086547587,
+          "total_r_net": 28.905179012511866
+        },
+        "bear": {
+          "n_trades": 27,
+          "wr": 0.2962962962962963,
+          "mean_r_net": 0.47905889107343314,
+          "total_r_net": 12.934590058982694
+        }
       }
     },
     {
@@ -153,9 +193,43 @@
         "p_value": 0.008,
         "observed_mean": 0.9732529125783472,
         "n_perm": 1000
+      },
+      "by_regime": {
+        "bull": {
+          "n_trades": 15,
+          "wr": 0.4666666666666667,
+          "mean_r_net": 1.7535400551617746,
+          "total_r_net": 26.30310082742662
+        },
+        "chop": {
+          "n_trades": 14,
+          "wr": 0.2857142857142857,
+          "mean_r_net": 0.7351356788169517,
+          "total_r_net": 10.291899503437325
+        },
+        "bear": {
+          "n_trades": 29,
+          "wr": 0.3448275862068966,
+          "mean_r_net": 0.6846092620234545,
+          "total_r_net": 19.85366859868018
+        }
       }
     }
   ],
+  "b6_regime_combined_train_val": {
+    "bull": {
+      "n_trades": 166,
+      "mean_r_net": 0.8618854228200598
+    },
+    "chop": {
+      "n_trades": 62,
+      "mean_r_net": 1.5792164827135222
+    },
+    "bear": {
+      "n_trades": 99,
+      "mean_r_net": 1.105552775179676
+    }
+  },
   "walkforward": {
     "k": 10,
     "positive_expectancy_folds": 10,
@@ -286,7 +360,8 @@
       "g5_maxdd_le_15r": true,
       "g6_perm_p_le_005": true
     },
-    "g4_walkforward_7of10": true
+    "g4_walkforward_7of10": true,
+    "b6_regime_consistency": true
   },
   "strict_v010_pass": false,
   "proposed_v020_pass": true
