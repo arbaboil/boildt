@@ -22,7 +22,10 @@ name: daily-shadow-log
 
 on:
   schedule:
-    - cron: '0 21 * * *'
+    # Weekdays only. US oil markets are closed Sat/Sun so no fresh price
+    # data arrives; a Sat/Sun run would fail on shadow_log's stale-data
+    # guard. Fri 21:00 UTC catches the Fri close (5pm ET EDT).
+    - cron: '0 21 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -143,10 +146,16 @@ jobs:
           git config user.email "helios-bot@users.noreply.github.com"
           # Only stage tracked artifact directories; raw data is gitignored
           # and .env must NEVER be committed.
-          # history/ is inside results/emitted/ so already covered by that add,
-          # but list explicitly for clarity.
-          git add results/emitted/ results/shadow/ results/ship_readiness.json \
-                  results/drift_status.json admin/drift.flag 2>/dev/null || true
+          # history/ is inside results/emitted/ so already covered by that add.
+          # NB: `git add A B missing_C` aborts and stages nothing when
+          # missing_C doesn't match. Split into separate adds so optional
+          # artifacts (drift_status, drift.flag) don't block the required ones.
+          git add results/emitted/ results/shadow/ results/ship_readiness.json
+          [ -f results/drift_status.json ] && git add results/drift_status.json || true
+          [ -f admin/drift.flag ] && git add admin/drift.flag || true
+          echo "--- staged changes ---"
+          git status --short
+          echo "----------------------"
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
