@@ -1,7 +1,11 @@
 ---
 name: Helios ↔ Vega pre-ship coordination complete (2026-09-22)
-description: Full handshake with Vega done same-day. R2 buckets provisioned, site loader shipped, kill-switch mirroring live. Waiting on Owner-supplied R2 credentials + calendar time.
+description: Full handshake with Vega done same-day. R2 buckets provisioned, site loader shipped, kill-switch mirroring live, R2 secrets ADDED (uploads confirmed on 2026-09-28). Coordination phase closed.
 type: project
+---
+
+**Status update 2026-09-29:** Owner added the 3 R2 GitHub Secrets before the first cron. Uploads to `helios-data-staging` bucket verified in the 2026-09-28 cron run log (weekly/current.json, daily/current.json, backtest/summary.json, backtest/curve.json, admin/killswitch.json, history/*). No remaining Owner-side R2 blocker.
+
 ---
 
 **Coordination completed 2026-09-22.** Full 4-message handshake with Vega done same day as pre-ship heads-up (see `handoff-pack/VEGA-MESSAGE.md` for the initial). Both sides code-complete + deployed to their respective infra.

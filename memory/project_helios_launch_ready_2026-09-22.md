@@ -1,7 +1,13 @@
 ---
 name: Helios launch-ready state (2026-09-22, post PROTOCOL v0.2.0 approval)
-description: End-of-session-3-plus state. All Owner-blocked items resolved. Bot ships day 29 (2026-10-20). Vega handoff pack sealed. Only calendar time remains.
+description: End-of-session-3-plus snapshot. Bot then went live 2026-09-22 under PROTOCOL v0.2.1 early-ship override; drift_monitor is the compensating control. Gate 7 evidence window now completes ~2026-11-08 due to 2026-09-22→29 cron outage.
 type: project
+---
+
+**Superseded 2026-09-22 (same day):** Owner approved early ship under PROTOCOL v0.2.1. Bot v3 seed 7 went LIVE for the WEEKLY call on 2026-09-22 (commit `b88ad80`, "SHIP LIVE"), not on the originally-planned 2026-10-20. `drift_monitor.py` runs after every emit as the compensating control per PROTOCOL v0.2.1. Kept below as the pre-override snapshot.
+
+**Ship blocker update 2026-09-29:** The daily-shadow-log cron silently no-op'd its commit step 2026-09-22→29 due to a git-add-abort bug (see `project_helios_cron_outage_2026-09-29.md`). R2 stayed fresh so live behavior was unaffected, but only 3 shadow files landed on main during the window. Fixed in commit `7a54f9c`. True 28-day silent-live evidence window now completes ~2026-11-08.
+
 ---
 
 **Snapshot 2026-09-22 (session-3 extended, post-approval).** All four Owner-blocked items from the SESSION3-REPORT are RESOLVED:
