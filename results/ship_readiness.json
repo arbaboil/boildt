@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-09-29T21:07:40+00:00",
+  "generated_at_utc": "2026-09-30T21:08:03+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v020": true,
     "ready_v010_retired": false,
     "protocol_version": "0.2.0",
     "blocking_reasons": [
-      "Gate 7 shadow: 25 days remaining (3/28)"
+      "Gate 7 shadow: 24 days remaining (4/28)"
     ],
     "green_light": false
   },
@@ -94,10 +94,10 @@
   },
   "shadow": {
     "status": "present",
-    "n_days": 3,
+    "n_days": 4,
     "first_day": "20260918.json",
-    "last_day": "20260929.json",
-    "days_until_gate7_pass": 25
+    "last_day": "20260930.json",
+    "days_until_gate7_pass": 24
   },
   "sweep_evidence": {
     "fresh_seed": {
