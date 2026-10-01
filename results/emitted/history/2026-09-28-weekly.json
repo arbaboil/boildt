@@ -4,32 +4,32 @@
   "week_end": "2026-10-04",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-09-30T00:00:00+00:00",
-  "published_utc": "2026-09-30T21:08:02+00:00",
+  "signal_date_utc": "2026-10-01T00:00:00+00:00",
+  "published_utc": "2026-10-01T21:08:58+00:00",
   "direction": "LONG",
   "shadow_mode": false,
-  "current_price": 90.37000274658203,
-  "atr_20d": 3.4699998626708974,
+  "current_price": 92.91000366210938,
+  "atr_20d": 3.572000366210937,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.3787697301416608
+      "value": 0.3531503569704226
     },
     "momentum": {
       "vote": 0,
       "weight": 1.3157410969052088,
-      "value": -0.019505299809337767
+      "value": 0.003882283049378134
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": -0.2907542720405454
+      "value": -0.22167554876058543
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.03718484059612538
+      "value": 0.3237150268817743
     },
     "cot": {
       "vote": 0,
@@ -44,7 +44,7 @@
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.015075250037434835
+      "value": 0.018477651562564586
     }
   },
   "confidence": 92,
@@ -76,8 +76,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 90.37000274658203,
-    "suggested_stop_price_at_entry": 87.75369274652557,
-    "suggested_target_price_at_entry": 106.65417460457846
+    "suggested_entry_price": 92.91000366210938,
+    "suggested_stop_price_at_entry": 90.21678733698545,
+    "suggested_target_price_at_entry": 109.67284808350172
   }
 }
