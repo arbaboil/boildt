@@ -4,32 +4,32 @@
   "week_end": "2026-10-11",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-06T00:00:00+00:00",
-  "published_utc": "2026-10-06T21:07:08+00:00",
+  "signal_date_utc": "2026-10-07T00:00:00+00:00",
+  "published_utc": "2026-10-07T21:08:58+00:00",
   "direction": "LONG",
   "shadow_mode": false,
-  "current_price": 89.91999816894531,
-  "atr_20d": 3.683500335693359,
+  "current_price": 88.9000015258789,
+  "atr_20d": 3.659999923706054,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.24391667393804956
+      "value": 0.2571679954209429
     },
     "momentum": {
-      "vote": 0,
+      "vote": -1,
       "weight": 1.3157410969052088,
-      "value": -0.04660596727834825
+      "value": -0.08987564529178882
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": -0.40720942673656985
+      "value": -0.5231332429655764
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.6090704343852479
+      "value": 0.6174517277631071
     },
     "cot": {
       "vote": 0,
@@ -44,12 +44,12 @@
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.029021144708130952
+      "value": 0.029269664511052233
     }
   },
   "confidence": 92,
-  "score": 0.3686450682723303,
-  "message": "2 components confirming long bias; 92% confidence.",
+  "score": 0.2592678726957625,
+  "message": "3 components confirming long bias; 92% confidence.",
   "primary_risk": {
     "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
     "severity": "med",
@@ -76,8 +76,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 89.91999816894531,
-    "suggested_stop_price_at_entry": 87.14271311278164,
-    "suggested_target_price_at_entry": 107.20609467594886
+    "suggested_entry_price": 88.9000015258789,
+    "suggested_stop_price_at_entry": 86.14043530698358,
+    "suggested_target_price_at_entry": 106.07581423960286
   }
 }
