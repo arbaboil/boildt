@@ -1,7 +1,7 @@
 {
-  "checked_at_utc": "2026-10-07T21:08:59+00:00",
+  "checked_at_utc": "2026-10-08T21:09:32+00:00",
   "artifact_checked": "results/emitted/weekly/current.json",
-  "history_days": 8,
+  "history_days": 9,
   "drift_detected": false,
   "n_failing_categories": 0,
   "checks": {
