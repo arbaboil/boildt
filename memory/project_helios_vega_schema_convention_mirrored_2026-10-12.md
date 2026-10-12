@@ -25,23 +25,25 @@ type: project
    autotrader candidate shipping 10-20, parallel to Argus/BTC which
    is deferring autotrader indefinitely).
 
-**Vega's framing of 10-20 may not line up with Gate 7 math.** 10-20
-was the pre-cron-outage Gate 7 completion date. Post-outage
-(4 silent-no-op commits 09-23 → 09-28, see
-`memory/project_helios_cron_outage_2026-09-29.md`), Gate 7 completes
-~2026-11-04 Wednesday (18 shadow days remaining as of 2026-10-09
-cron per `results/ship_readiness.json`). Three possibilities:
-  (a) Vega missed the outage memo and is tracking the pre-outage date.
-  (b) Owner is planning a second early-ship override (like v0.2.1)
-      for the autotrader cutover on 10-20 with Gate 7 completion
-      following behind.
-  (c) The "live-cutover" term refers to something other than Gate 7
-      completion (e.g., engine-signal visibility already live post
-      Vega's 9e76dc0 fix, with autotrader cutover gated separately).
-Needs Owner clarification before any coordination with Vega or
-scope planning around a 10-20 ship.
+**Two distinct dates — Owner-confirmed 2026-10-12.** Vega's 10-20 and
+my Gate 7 math track different events; both are correct in their own
+scope.
+- **2026-10-20 — on-chain autotrader cutover.** The milestone Vega
+  tracks. Signals are already live-visible on /oil post commit
+  9e76dc0 (confirmed render: LONG @ $91.65). The autotrader cutover
+  is a separate gate with its own prerequisites and is not blocked
+  by Gate 7 completion.
+- **~2026-11-04 — Gate 7 shadow-window completion.** 28 weekday
+  shadow files from the 2026-09-22 ship, net of the four lost in the
+  09-23 → 09-28 cron outage (not backfilled per data-honesty rule).
+  Formal retirement of the PROTOCOL v0.2.1 Gate 7 override. Signal
+  model keeps emitting the whole way.
 
-**How to apply.** Treat 10-20 as a *soft* target subject to Owner
-clarification. Do not plan autotrader ship work around 10-20 until
-Owner confirms Gate 7 handling. Continue shadow window on schedule
-toward ~2026-11-04 as the formal Gate 7 completion.
+Owner directive 2026-10-12: do NOT relay a correction to Vega — the
+10-20 autotrader framing is intentional on their side.
+
+**How to apply.** When Vega references "10-20 cutover" or similar, it
+means the autotrader milestone, not Gate 7. Track both dates
+independently. Continue the shadow window on autopilot toward
+~2026-11-04; separately coordinate with Owner on autotrader-cutover
+readiness as 10-20 approaches.

@@ -17,10 +17,10 @@ indefinitely.
 - Retune experiment ruled out rescue (couldn't fix via GA retune)
 
 **Implications for Helios (RIG):**
-- 10-20 is Helios's own autotrader-cutover expectation per Vega
-  (but see `memory/project_helios_vega_schema_convention_mirrored_2026-10-12.md`
-  for the Gate 7 date discrepancy — 10-20 is pre-outage math; actual
-  Gate 7 completes ~2026-11-04).
+- 10-20 is Helios's on-chain autotrader-cutover milestone (Owner
+  confirmed 2026-10-12 that this is distinct from Gate 7 shadow
+  completion, which lands ~2026-11-04). Signals are already
+  live-rendering per Vega's 9e76dc0 fix.
 - Helios will not be a joint ship with Argus on autotrader; Helios
   stands alone on the autotrader side.
 - Argus's failure pattern (chart-only genome, no fundamental votes)
