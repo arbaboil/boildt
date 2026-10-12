@@ -10,14 +10,34 @@ Design principles (from FAR playbook):
   TRAIN slice per PROTOCOL.md.
 - Confidence = |weighted sum| normalized by max possible, additionally
   penalized by fraction of missing votes.
+
+Env toggle `HELIOS_COT_ENABLED`:
+- Default "true" — cot vote fires per the genome.
+- Set to "false" to force vote_cot=0 and treat cot as unavailable (same
+  state as pre-fix when cot_mm_net_wti was silently NaN). The daily cron
+  workflow pins this to "false" until Owner approves the COT fix for
+  live deployment (see docs/memos/2026-10-12_owner_decisions_cot_fix_and_v2.md).
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
 import pandas as pd
+
+
+def _cot_enabled() -> bool:
+    """Read HELIOS_COT_ENABLED env var; default True (research mode).
+
+    Daily cron workflow (`.github/workflows/daily.yml`) pins this to
+    `false` until Owner approves the COT fix. This preserves the live
+    behavior that existed when `cot_mm_net_wti` was silently NaN
+    (2022-02 → 2026-10-12). Flip the workflow env to `true` on approval.
+    """
+    v = os.environ.get("HELIOS_COT_ENABLED", "true").strip().lower()
+    return v not in {"0", "false", "no", "off"}
 
 
 @dataclass
@@ -134,8 +154,12 @@ def score_row(row: pd.Series, cfg: VoteConfig) -> dict[str, Any]:
     weights["curve"] = cfg.w_curve
     have["curve"] = not pd.isna(crackz)
 
-    # COT positioning (contrarian at extremes)
+    # COT positioning (contrarian at extremes). Honor HELIOS_COT_ENABLED
+    # env toggle — when disabled, treat as unavailable (matches the pre-fix
+    # silent-NaN state and keeps live behavior stable until Owner approves).
     cotz = row.get("cot_mm_net_wti_z", np.nan)
+    if not _cot_enabled():
+        cotz = np.nan
     votes["cot"] = _cot_vote(cotz, cfg.cot_bull, cfg.cot_bear)
     weights["cot"] = cfg.w_cot
     have["cot"] = not pd.isna(cotz)
@@ -229,6 +253,10 @@ def score_matrix(features: pd.DataFrame,
     vixz = col("vix_z156w")
     crackz = col("crack_spread_z")
     cotz = col("cot_mm_net_wti_z")
+    # When HELIOS_COT_ENABLED is false, blank the cot series to match the
+    # pre-fix silent-NaN behavior. Keeps v_cot=0 and have_cot=False.
+    if not _cot_enabled():
+        cotz = np.full(n, np.nan)
     eias = col("eia_stocks_surprise")
     dxyr = col("dxy_ret_20d")
 

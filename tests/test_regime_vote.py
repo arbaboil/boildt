@@ -84,3 +84,39 @@ def test_extreme_bear_features_get_sell():
     })
     out = score_matrix(df, VoteConfig())
     assert out.iloc[0]["read"] in ("SELL", "STRONG_SELL")
+
+
+def test_cot_enabled_flag_forces_vote_zero(monkeypatch):
+    """HELIOS_COT_ENABLED=false must blank vote_cot and lower coverage.
+
+    Matches the pre-fix silent-NaN behavior (locks the 2026-10-12 fix
+    behind an owner-approval gate). Scoring with the flag off must
+    produce the same vote_cot series as scoring with cot_mm_net_wti_z
+    all-NaN — this is the invariant the daily cron depends on.
+    """
+    df = pd.DataFrame({
+        "date": [pd.Timestamp("2020-06-01", tz="UTC")],
+        "wti_ema50_slope": [0.5],
+        "wti_ret_20d": [0.20],
+        "vix_z156w": [-2.0],
+        "crack_spread_z": [2.0],
+        "cot_mm_net_wti_z": [-2.0],       # would fire cot bull (+1)
+        "eia_stocks_surprise": [-8000.0],
+        "dxy_ret_20d": [-0.05],
+    })
+
+    monkeypatch.delenv("HELIOS_COT_ENABLED", raising=False)
+    enabled = score_matrix(df, VoteConfig())
+    assert int(enabled.iloc[0]["vote_cot"]) == 1
+
+    monkeypatch.setenv("HELIOS_COT_ENABLED", "false")
+    disabled = score_matrix(df, VoteConfig())
+    assert int(disabled.iloc[0]["vote_cot"]) == 0
+    # Coverage should drop because cot moves from "have" to "not have".
+    assert float(disabled.iloc[0]["coverage"]) < float(enabled.iloc[0]["coverage"])
+
+    # Falsy values should all disable
+    for falsy in ("0", "False", "no", "OFF"):
+        monkeypatch.setenv("HELIOS_COT_ENABLED", falsy)
+        out = score_matrix(df, VoteConfig())
+        assert int(out.iloc[0]["vote_cot"]) == 0, f"'{falsy}' should disable"

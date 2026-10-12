@@ -72,6 +72,13 @@ jobs:
       - name: Run daily pipeline (LIVE — weekly out of shadow per PROTOCOL v0.2.1)
         env:
           PYTHONIOENCODING: utf-8
+          # Keep cot vote at 0 in live until Owner approves the 2026-10-12 fix.
+          # Pre-fix, cot_mm_net_wti was silently NaN since 2022-02 (CFTC rename
+          # of the WTI NYMEX contract). Fix landed in commit 750d979 but needs
+          # explicit Owner sign-off before changing live model behavior. Flip
+          # this to "true" to enable cot vote on next cron run. See
+          # docs/memos/2026-10-12_owner_decisions_cot_fix_and_v2.md.
+          HELIOS_COT_ENABLED: "false"
         run: |
           python scripts/daily_pipeline.py \
             --candidate results/bots/bot_v3_seed7_candidate.json \
