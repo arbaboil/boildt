@@ -416,3 +416,82 @@ sign-off.
    as the signal producer; document why the bot ship is deferred.
 
 ---
+
+## 2026-10-12 — Session N — Mid-shadow maintenance + silent-COT bug discovery
+
+**Intent.** Full day of maintenance work on the live-under-v0.2.1 bot. No
+prescribed task — proceed by best judgment. Shadow window stands at
+10/28 as of 2026-10-09 cron.
+
+**Method.** Priority-ordered, each landed before moving on:
+
+1. **GitHub Actions runner pin.** `ubuntu-latest` migrates to Ubuntu 26
+   on 2026-10-19 — mid-Gate-7-window. Pinned both `daily.yml` and
+   `tests.yml` to `ubuntu-24.04` to lock the environment through ship.
+2. **Shadow strip audit.** New `scripts/shadow_strip_audit.py` reconstructs
+   realized R per emitted weekly call from WTI daily closes. Reports two
+   entry conventions (ref close + next close) and compares against VAL /
+   HOLDOUT model expectation. First audit: 2 closed trades = −2R vs model
+   expectation of +0.92R; third trade open at +0.42R mark-to-market.
+   Within normal probability for 31% WR strategy (p ≈ 0.47 of two
+   consecutive stops). Report at `results/shadow_audit.json`.
+3. **ship_readiness v0.2.1 refit.** `ship_readiness.py` was emitting
+   `protocol_version: 0.2.0` and treating Gate 7 countdown as a hard
+   blocker, misreading the live-with-override state. Rewrote the verdict
+   function to report `live_status` (LIVE/PAUSED_KILLSWITCH/PAUSED_DRIFT),
+   compensating-controls block (killswitch + drift), and keep
+   `v020_green_light` as a separate "would-pass-strict" signal.
+4. **Daily cadence v0.3.0 scope memo.** `docs/DAILY-V03-SCOPE.md`.
+   Diagnosed TRAIN DD = 18.4R from 2013 chop regime (not a crisis).
+   Recommended fix: stack chop-regime filter + 3-day post-stop cool-off;
+   fall back to daily-native genome re-evolve if A+B insufficient. No
+   code — awaits owner approval.
+5. **v2 feature research memo.** `docs/V2-FEATURE-RESEARCH.md`.
+   Investigating COT depth features surfaced a silent-data bug:
+
+**Finding — silent COT WTI data outage.** CFTC renamed
+`CRUDE OIL, LIGHT SWEET - NEW YORK MERCANTILE EXCHANGE` →
+`WTI-PHYSICAL - NEW YORK MERCANTILE EXCHANGE` on 2022-02-01.
+`src/data/cot.py` queried by name, so WTI COT silently stopped after
+2022-02 — `cot_mm_net_wti` has been NaN for the entire HOLDOUT and the
+10-day shadow strip. Live model's `vote_cot = 0` on every emitted call.
+
+**Fix.** Query SODA by `cftc_contract_market_code` (067651) — stable
+across the rename. Verified: WTI COT 1061 rows through 2026-10-06.
+
+**Impact re-audit.** Candidate still passes v0.2.0 cleanly:
+
+| Slice | pre-fix n/R | post-fix n/R | Δ |
+|---|---|---|---|
+| TRAIN   | 234 / +1.29 | 234 / +1.29 | nil |
+| VAL     | 95  / +0.92 | 97  / +0.98 | +2 trades, +0.06 R |
+| HOLDOUT | 54  / +0.73 | 58  / +0.73 | +4 trades, nil |
+
+Live behavior change on next cron ≈ 1-2 extra signals per quarter,
+contrarian cot vote (w_cot=0.98, cot_bull=-0.64, cot_bear=+2.5).
+
+**Deploy status.** Fix committed, awaiting owner approval to let it
+roll on next push. Full three-decision memo in
+`docs/memos/2026-10-12_owner_decisions_cot_fix_and_v2.md`.
+
+**Result one-liner.** Found and fixed a silent 4-year data outage that
+left `vote_cot = 0` on every live call; candidate re-audits clean on
+corrected data; two scope memos + ship_readiness v0.2.1 refit shipped.
+
+**Gates.** All v0.2.0 pass; v0.2.1 override + compensating controls
+unchanged. 103 tests green.
+
+**Decisions needed from owner:**
+1. Approve auto-deploy of COT fix on next cron run.
+2. Approve daily v0.3.0 approach (A+B stack).
+3. Approve v2 Phase 2a scope (COT depth + EIA expansion).
+
+**Artifacts added:**
+- `scripts/shadow_strip_audit.py` + `results/shadow_audit.json`
+- `docs/DAILY-V03-SCOPE.md`
+- `docs/V2-FEATURE-RESEARCH.md`
+- `docs/memos/2026-10-12_owner_decisions_cot_fix_and_v2.md`
+- updated `src/data/cot.py`, `scripts/ship_readiness.py`,
+  `.github/workflows/*.yml`
+
+---
