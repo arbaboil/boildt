@@ -100,6 +100,17 @@ jobs:
         run: |
           python scripts/ship_readiness.py || true
 
+      - name: Refresh shadow-strip audit (realized R vs model)
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          # Rebuilds results/shadow_audit.json: per-trade realized R from
+          # emitted weekly history vs model VAL/HOLDOUT expectation. Keeps
+          # Owner's dashboard current without needing to run anything local.
+          # Non-fatal — missing data (fresh clone, no emitted history yet)
+          # should not break the shadow commit.
+          python scripts/shadow_strip_audit.py || true
+
       - name: Upload emitted artifacts to R2 (staging)
         env:
           # R2 upload uses the S3-compatible endpoint. Secrets are added
@@ -128,6 +139,15 @@ jobs:
               echo "Uploaded ${KEY} to ${R2_BUCKET}"
             fi
           done
+          # Shadow-strip audit — not a site-rendered artifact, but useful
+          # for Owner/Vega dashboards checking realized vs expected R.
+          if [ -f "results/shadow_audit.json" ]; then
+            aws s3 cp "results/shadow_audit.json" "s3://${R2_BUCKET}/audit/shadow_audit.json" \
+              --endpoint-url "$ENDPOINT" \
+              --content-type application/json \
+              --cache-control "public, max-age=30, s-maxage=30"
+            echo "Uploaded audit/shadow_audit.json to ${R2_BUCKET}"
+          fi
           # Weekly history — index + per-week snapshots. Recursive upload;
           # aws s3 cp handles the whole directory in one call.
           if [ -d "results/emitted/history" ]; then
@@ -162,6 +182,7 @@ jobs:
           # artifacts (drift_status, drift.flag) don't block the required ones.
           git add results/emitted/ results/shadow/ results/ship_readiness.json
           [ -f results/drift_status.json ] && git add results/drift_status.json || true
+          [ -f results/shadow_audit.json ] && git add results/shadow_audit.json || true
           [ -f admin/drift.flag ] && git add admin/drift.flag || true
           echo "--- staged changes ---"
           git status --short
