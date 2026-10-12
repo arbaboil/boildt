@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-12T10:28:16+00:00",
+  "generated_at_utc": "2026-10-12T10:55:37+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v020": true,
@@ -103,11 +103,11 @@
     "status": "present",
     "horizon_trades": 40,
     "n_paths": 10000,
-    "prob_positive_final_r": 0.9886,
+    "prob_positive_final_r": 0.9923,
     "prob_ruin": 0.0,
-    "final_r_median": 41.6181207940907,
-    "final_r_p05": 10.897295137721374,
-    "max_dd_r_p95": 13.517137316814047
+    "final_r_median": 44.62557734681777,
+    "final_r_p05": 13.54139895096546,
+    "max_dd_r_p95": 13.166440125683733
   },
   "shadow": {
     "status": "present",
