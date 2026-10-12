@@ -1,7 +1,7 @@
 # HELIOS — Data Contract (schemas for FAR site integration)
 
 Version: 0.1.0 (draft — locks on first shadow-window entry)
-Last edited: 2026-09-22
+Last edited: 2026-10-12
 
 Modeled on AXIS's contract in `C:\dev\FarACtionRadar\v16build\web\axis-engine\src\emit.ts`.
 Field names + shapes mirror AXIS where semantics match. Deviations
@@ -162,3 +162,35 @@ Owner-only via a dedicated R2 key `admin/killswitch.json`.
   removed. Adding fields is safe; site can ignore unknown keys.
 - Any removal or type change bumps schema_version and MUST be
   co-published with a schema deprecation window (2+ weeks).
+
+## FAR validator coordination (Vega handoff)
+
+The FAR site-loader runs a strict validator over every fetched emission
+(`lib/helios/types.ts :: assertSignalComponents`). Payloads that fail
+cause `tryFetchAndParse` to return null, falling the site back to the
+pre-first-emission AWAITING state — even though the emission on GH-raw
+/ R2 is correct. On 2026-09-22 our tri-state votes (−1 / 0 / +1)
+landed, but the validator only accepted 0 / 1 and silently rejected
+every bearish-containing call for 20 days. Vega patched 2026-10-12
+(commit 9e76dc0 on FAR main) to widen the vote type and support signed
+net.
+
+**Rule for Helios:** Any schema change on an emitted artifact requires
+a commit-message ping before the push lands. Include:
+
+1. `PROTOCOL vX.Y schema change — Vega validator update required` header.
+2. The specific field / enum value / type change.
+3. The FAR-side code location that must be updated
+   (default: `lib/helios/types.ts`).
+4. Approximate next emission timestamp (so Vega knows the deadline).
+
+Pure value changes to existing fields do not require the ping — e.g.,
+`HELIOS_COT_ENABLED` flipping to true adjusts `vote_cot` between the
+existing −1 / 0 / +1 states, so Vega's validator post-9e76dc0 handles
+it. Only field-list, type, or new-discrete-value changes trigger the
+notification.
+
+See `memory/feedback_notify_vega_on_schema_changes.md` for the canonical
+procedure and
+`memory/project_helios_vega_awaiting_bug_2026-10-12.md` for the
+worked precedent.
