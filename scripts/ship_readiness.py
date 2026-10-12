@@ -295,9 +295,48 @@ def _sweep_evidence(freshseed: dict | None, engine_v02: dict | None,
     return out
 
 
+def _killswitch_state() -> dict:
+    ks_path = REPO / "admin" / "killswitch.json"
+    if not ks_path.exists():
+        return {"present": False}
+    try:
+        d = json.loads(ks_path.read_text(encoding="utf-8"))
+        return {"present": True, "enabled": bool(d.get("enabled")),
+                "reason": d.get("reason"), "set_at_utc": d.get("set_at_utc")}
+    except Exception as e:
+        return {"present": True, "error": f"{type(e).__name__}: {e}"}
+
+
+def _drift_monitor_state() -> dict:
+    p = REPO / "results" / "drift_status.json"
+    if not p.exists():
+        return {"present": False}
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+        return {
+            "present": True,
+            "drift_detected": d.get("drift_detected"),
+            "checked_at_utc": d.get("checked_at_utc"),
+            "override_active": d.get("override_active"),
+            "n_failing_categories": d.get("n_failing_categories"),
+        }
+    except Exception as e:
+        return {"present": True, "error": f"{type(e).__name__}: {e}"}
+
+
 def _readiness_verdict(audit_row: dict, drift: dict, cost: dict,
                         mc: dict, shadow: dict, protocol_signed: bool) -> dict:
-    """Compute overall ship-readiness."""
+    """Compute readiness under PROTOCOL v0.2.1.
+
+    Under v0.2.1, Gate 7 (shadow window) is Owner-overridden for the first
+    ship. The bot is already LIVE; drift_monitor + kill-switch are the
+    compensating controls. The verdict carries two signals:
+
+    * `v020_green_light` — would the bot pass strict v0.2.0 right now?
+      (Gate 7 counts here as a hard blocker.)
+    * `live_status` — operational state (LIVE / SHADOW / PAUSED) derived
+      from kill-switch + drift state, independent of Gate 7 progress.
+    """
     reasons = []
     ready_v020 = audit_row.get("strict_v020_pass") is True
     ready_v010_retired = audit_row.get("strict_v010_pass_retired") is True
@@ -307,17 +346,34 @@ def _readiness_verdict(audit_row: dict, drift: dict, cost: dict,
         reasons.append("cost stress: some scenario has negative mean R on a slice")
     if mc.get("status") == "present" and (mc.get("prob_ruin") or 0) > 0.01:
         reasons.append(f"Monte Carlo ruin prob > 1%: {mc.get('prob_ruin')}")
-    # PROTOCOL v0.2.0 is locked as of 2026-09-22 — no longer a blocker.
     gate7_needed = max(0, 28 - shadow.get("n_days", 0))
     if gate7_needed > 0:
         reasons.append(f"Gate 7 shadow: {gate7_needed} days remaining "
                         f"({shadow.get('n_days', 0)}/28)")
+
+    ks = _killswitch_state()
+    dm = _drift_monitor_state()
+
+    if ks.get("enabled"):
+        live_status = "PAUSED_KILLSWITCH"
+    elif dm.get("drift_detected"):
+        live_status = "PAUSED_DRIFT"
+    else:
+        live_status = "LIVE"
+
     return {
         "ready_v020": ready_v020,
         "ready_v010_retired": ready_v010_retired,
-        "protocol_version": "0.2.0",
+        "protocol_version": "0.2.1",
+        "live_status": live_status,
         "blocking_reasons": reasons,
+        "v020_green_light": len(reasons) == 0,
+        # Backward compat for any downstream reader of the old key.
         "green_light": len(reasons) == 0,
+        "compensating_controls": {
+            "killswitch": ks,
+            "drift_monitor": dm,
+        },
     }
 
 
@@ -494,17 +550,22 @@ def main() -> int:
                   f"E3_cov30={_fmt(g['e3_coverage_ge_30pct'])}  E4_stab70={_fmt(g['e4_stability_ge_70pct'])}")
         print()
 
-    print("=== VERDICT ===")
+    print("=== VERDICT (PROTOCOL v0.2.1) ===")
+    print(f"  live_status:             {verdict['live_status']}")
     print(f"  ready_v020 (canonical):  {_fmt(verdict['ready_v020'])}")
     print(f"  ready_v010 (retired):    {_fmt(verdict['ready_v010_retired'])}")
-    print(f"  green_light:   {_fmt(verdict['green_light'])}")
+    print(f"  v020_green_light:        {_fmt(verdict['v020_green_light'])}")
+    cc = verdict["compensating_controls"]
+    print(f"  killswitch:              enabled={cc['killswitch'].get('enabled')}")
+    print(f"  drift_monitor:           drift={cc['drift_monitor'].get('drift_detected')}  "
+          f"override={cc['drift_monitor'].get('override_active')}")
     if verdict["blocking_reasons"]:
-        print("  blocking:")
+        print("  v0.2.0 blockers (Gate 7 override active under v0.2.1):")
         for r in verdict["blocking_reasons"]:
             print(f"    - {r}")
     print()
     print(f"Wrote {args.out}")
-    return 0 if verdict["green_light"] else 2
+    return 0 if verdict["v020_green_light"] else 2
 
 
 if __name__ == "__main__":

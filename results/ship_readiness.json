@@ -1,14 +1,31 @@
 {
-  "generated_at_utc": "2026-10-09T21:08:40+00:00",
+  "generated_at_utc": "2026-10-12T10:28:16+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v020": true,
     "ready_v010_retired": false,
-    "protocol_version": "0.2.0",
+    "protocol_version": "0.2.1",
+    "live_status": "LIVE",
     "blocking_reasons": [
       "Gate 7 shadow: 18 days remaining (10/28)"
     ],
-    "green_light": false
+    "v020_green_light": false,
+    "green_light": false,
+    "compensating_controls": {
+      "killswitch": {
+        "present": true,
+        "enabled": false,
+        "reason": null,
+        "set_at_utc": null
+      },
+      "drift_monitor": {
+        "present": true,
+        "drift_detected": false,
+        "checked_at_utc": "2026-10-09T21:08:40+00:00",
+        "override_active": true,
+        "n_failing_categories": 0
+      }
+    }
   },
   "gates": {
     "TRAIN_g1_sharpe_ci_pos": true,
@@ -195,10 +212,10 @@
     }
   },
   "sources": {
-    "audit": "results/bots/bot_v3_seed7_candidate_audit.json",
-    "cost_stress": "results/bots/bot_v3_seed7_candidate_cost_stress.json",
-    "drift": "results/bots/bot_v3_seed7_candidate_holdout_drift.json",
-    "ablation": "results/bots/bot_v3_seed7_candidate_ablation.json",
-    "monte_carlo": "results/monte_carlo/bot_v3_seed7_candidate_mc.json"
+    "audit": "results\\bots\\bot_v3_seed7_candidate_audit.json",
+    "cost_stress": "results\\bots\\bot_v3_seed7_candidate_cost_stress.json",
+    "drift": "results\\bots\\bot_v3_seed7_candidate_holdout_drift.json",
+    "ablation": "results\\bots\\bot_v3_seed7_candidate_ablation.json",
+    "monte_carlo": "results\\monte_carlo\\bot_v3_seed7_candidate_mc.json"
   }
 }
