@@ -8,7 +8,8 @@ on:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    # Pinned to ubuntu-24.04 — matches daily.yml. See daily.yml comment for why.
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python-version: ["3.13"]

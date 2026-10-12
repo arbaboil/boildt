@@ -37,7 +37,10 @@ concurrency:
 
 jobs:
   run-pipeline:
-    runs-on: ubuntu-latest
+    # Pinned to ubuntu-24.04 to prevent the 2026-10-19 ubuntu-latest migration
+    # to Ubuntu 26 from disturbing the Gate 7 shadow window (closes ~2026-10-27).
+    # Revisit after ship: flip back to ubuntu-latest.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
