@@ -30,7 +30,17 @@
         "exit_reason": null
       },
       "has_detail": true
+    },
+    {
+      "week_of": "2026-10-12",
+      "week_end": "2026-10-18",
+      "direction": "LONG",
+      "outcome": {
+        "net_return_pct": null,
+        "exit_reason": null
+      },
+      "has_detail": true
     }
   ],
-  "generated_at_utc": "2026-10-09T21:08:40+00:00"
+  "generated_at_utc": "2026-10-12T21:09:06+00:00"
 }

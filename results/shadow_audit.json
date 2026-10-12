@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-12T15:28:20+00:00",
+  "generated_at_utc": "2026-10-12T21:09:07+00:00",
   "candidate": "bot_v3_seed7_candidate",
   "model_expectation": {
     "val_mean_r_net": 0.918234088394138,
@@ -8,13 +8,13 @@
     "ho_wr": 0.3148148148148148
   },
   "shadow_strip": {
-    "n_shadow_days": 10,
+    "n_shadow_days": 11,
     "direction_mix": {
-      "BUY": 10
+      "BUY": 11
     },
-    "mean_confidence": 0.898021515676209,
+    "mean_confidence": 0.8998774328619716,
     "first_asof": "2026-09-18",
-    "last_asof": "2026-10-09"
+    "last_asof": "2026-10-12"
   },
   "live_trades": [
     {
@@ -58,8 +58,8 @@
       "next_close_entry": {
         "outcome": "OPEN",
         "exit_date": "2026-10-12",
-        "exit_px": 92.7300033569336,
-        "r": 1.2010917255397493,
+        "exit_px": 93.12999725341797,
+        "r": 1.3466762452503827,
         "days_held": 5
       }
     },
@@ -74,8 +74,8 @@
       "ref_entry": {
         "outcome": "OPEN",
         "exit_date": "2026-10-12",
-        "exit_px": 92.7300033569336,
-        "r": 0.41773151204333764,
+        "exit_px": 93.12999725341797,
+        "r": 0.5724442638016848,
         "days_held": 2
       },
       "next_close_entry": {
@@ -84,6 +84,26 @@
         "exit_px": null,
         "r": null,
         "days_held": 0
+      }
+    },
+    {
+      "week_of": "2026-10-12",
+      "direction": "LONG",
+      "signal_date": "2026-10-12",
+      "entry_ref_px": 93.12999725341797,
+      "stop_ref_px": 90.5321596678181,
+      "target_ref_px": 109.2991949792829,
+      "max_hold_days": 11,
+      "ref_entry": {
+        "outcome": "OPEN",
+        "exit_date": "2026-10-12",
+        "exit_px": 93.12999725341797,
+        "r": 0.0,
+        "days_held": 1
+      },
+      "next_close_entry": {
+        "outcome": "NO_FILL",
+        "r": null
       }
     }
   ],

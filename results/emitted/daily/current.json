@@ -1,39 +1,39 @@
 {
   "type": "brief",
-  "as_of": "2026-10-09",
+  "as_of": "2026-10-12",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-09T00:00:00+00:00",
-  "published_utc": "2026-10-09T21:08:38+00:00",
+  "signal_date_utc": "2026-10-12T00:00:00+00:00",
+  "published_utc": "2026-10-12T21:09:05+00:00",
   "direction": "SHADOW",
   "shadow_mode": true,
-  "current_price": 91.6500015258789,
-  "atr_20d": 3.4290001983642577,
+  "current_price": 93.12999725341797,
+  "atr_20d": 3.44549998474121,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.19273260817405172
+      "value": 0.1635286108210671
     },
     "momentum": {
       "vote": -1,
       "weight": 1.3157410969052088,
-      "value": -0.09981322640950092
+      "value": -0.09508566899275313
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": -0.43025204916559473
+      "value": -0.5593940089763746
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.7150385401842877
+      "value": 0.7168510465329292
     },
     "cot": {
       "vote": 0,
       "weight": 0.9811580065464809,
-      "value": null
+      "value": -2.329347326246206
     },
     "eia": {
       "vote": 0,
@@ -43,7 +43,7 @@
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.026480966580172422
+      "value": 0.02243123476286579
     }
   },
   "confidence": 92,
@@ -59,9 +59,7 @@
     "protocol_version": "0.2.1",
     "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
     "coverage": 0.9184366047195975,
-    "null_components": [
-      "cot"
-    ],
+    "null_components": [],
     "helios_version": "0.2.1",
     "kill_switch_engaged": false,
     "kill_switch_reason": null,
@@ -75,8 +73,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 91.6500015258789,
-    "suggested_stop_price_at_entry": 89.06460444685116,
-    "suggested_target_price_at_entry": 107.74176831006776
+    "suggested_entry_price": 93.12999725341797,
+    "suggested_stop_price_at_entry": 90.5321596678181,
+    "suggested_target_price_at_entry": 109.2991949792829
   }
 }
