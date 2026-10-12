@@ -17,12 +17,17 @@ indefinitely.
 - Retune experiment ruled out rescue (couldn't fix via GA retune)
 
 **Implications for Helios (RIG):**
-- 10-20 is Helios's on-chain autotrader-cutover milestone (Owner
-  confirmed 2026-10-12 that this is distinct from Gate 7 shadow
-  completion, which lands ~2026-11-04). Signals are already
-  live-rendering per Vega's 9e76dc0 fix.
-- Helios will not be a joint ship with Argus on autotrader; Helios
-  stands alone on the autotrader side.
+- 10-20 is Helios's **signals-only** ship-day — not autotrader. Per
+  owner directive 2026-10-10 (relayed via Vega 2026-10-12), the oil
+  autotrader is parked at option C (signals-only). Autotrader review
+  re-opens post-2026-11-08 contingent on a post-ship signals audit.
+  See `memory/project_helios_autotrader_parked_option_c_2026-10-10.md`.
+- Both engines ship signals-only on 10-20. Helios is NOT the sole
+  autotrader-ship candidate — there is no autotrader-ship candidate
+  for 10-20 on either side.
+- Signals already live-rendering per Vega's 9e76dc0 fix.
+- Gate 7 shadow-window completes ~2026-11-04, distinct from the 10-20
+  signals cutover.
 - Argus's failure pattern (chart-only genome, no fundamental votes)
   is explicitly NOT the Helios design — our 7 vote components span
   price (trend/momentum/vol), curve (crack spread), positioning

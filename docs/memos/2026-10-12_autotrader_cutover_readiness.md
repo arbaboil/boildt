@@ -2,6 +2,23 @@
 
 Author: Helios · Date: 2026-10-12 · Target cutover: 2026-10-20 (8 days)
 
+> **Amendment 2026-10-12 (post-Vega reply):** The framing of this memo
+> as "autotrader cutover" is wrong. Per owner directive 2026-10-10
+> (relayed via Vega 2026-10-12) the oil autotrader is **parked at
+> option C — signals-only**. 10-20 is a signals-only ship for RIG,
+> parallel to Argus's own soft-ship signals-only decision. No on-chain
+> execution venue picked, no router contract, no executor worker. The
+> autotrader review gate re-opens post-2026-11-08 contingent on a
+> post-ship signals audit. See
+> `memory/project_helios_autotrader_parked_option_c_2026-10-10.md`.
+>
+> The audit *content* below (payload surface, ship prerequisites,
+> kill-switch, bounds) is still correct for the signals-only cutover —
+> the signal engine is what's actually shipping on 10-20. Gap D
+> (autotrader payload fields) is now explicitly deferred: Vega
+> confirmed `signal_id`, `position_sizing_hint`, and `early_close_rule`
+> all stay off the schema until autotrader opens (if it ever does).
+
 Owner confirmed 2026-10-12 that 2026-10-20 is the **on-chain autotrader
 cutover** (distinct from Gate 7 shadow completion, which lands
 ~2026-11-04). Signals are already rendering live on /oil post Vega
