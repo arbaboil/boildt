@@ -19,10 +19,18 @@ behavior change on next cron: cot vote begins firing per genome
 (contrarian, w_cot=0.98) → ~1-2 extra signals per quarter.
 
 **Deploy options.**
-  - (a) Let the fix roll on next push. Drift monitor is the safety net.
-    Recommended.
-  - (b) Pin a `cot_disabled` flag until formal v0.2.2 lock.
+  - (a) Let the fix roll. Drift monitor is the safety net. Recommended.
+  - (b) Pin a `cot_disabled` flag until formal v0.2.2 lock. **Landed in
+    commit 6f99844** — `HELIOS_COT_ENABLED` env var, pinned to `false`
+    on the daily cron. Flip to `"true"` in `.github/workflows/daily.yml`
+    to execute option (a).
   - (c) Pause live, re-audit holistically, re-enable.
+
+Current state: option (b) is live. The daily cron continues to emit
+with `vote_cot=0` (preserving pre-fix behavior) until Owner edits the
+workflow to flip the env var. Monte Carlo + ship_readiness have been
+refreshed on honest data (commit 10cfd49) so you can see what the
+future looks like once the flag flips.
 
 Full details: `docs/V2-FEATURE-RESEARCH.md` §Finding 0.
 
@@ -70,6 +78,15 @@ Also landed this session (no owner input needed):
   emitted weekly call. 2 closed trades = -2R vs model expectation
   of +0.92R/trade on VAL. Within normal probability for a 31% WR
   strategy (p ≈ 0.47 of two consecutive stops) but worth tracking.
-- 103 tests pass.
+- `HELIOS_COT_ENABLED` env flag gates the COT fix behind an explicit
+  owner-approval step on the daily cron (default enabled for research,
+  pinned false for live). Owner flips the workflow value to deploy.
+- `tests/test_feature_coverage.py` — new 10-column coverage gate on
+  HOLDOUT, floors each feature at 80% non-null. Would have caught
+  the silent COT outage in Feb 2022.
+- Monte Carlo refreshed on corrected COT data: P(final>0, 1yr) =
+  99.2%, P(ruin) = 0%, mean +1.125 R/trade. Marginally better than
+  pre-fix.
+- 103 → 114 tests pass.
 
 Draft responses to each decision point and I'll execute.

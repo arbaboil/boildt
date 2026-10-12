@@ -494,4 +494,29 @@ unchanged. 103 tests green.
 - updated `src/data/cot.py`, `scripts/ship_readiness.py`,
   `.github/workflows/*.yml`
 
+**Follow-up (same session, after initial push):**
+
+Noticed on review that pushing the COT fix auto-deployed on next cron
+— pushed = deployed, which conflicted with the memo's "awaits owner
+sign-off" framing. Three remediation items:
+
+- **`HELIOS_COT_ENABLED` env flag** (commit 6f99844). Both `score_row`
+  and `score_matrix` check the env var; falsy value blanks cot series
+  to reproduce pre-fix NaN state (vote_cot=0, coverage drops ~14pp).
+  Default enabled for research. Daily cron workflow pins to `false`.
+  Owner flips `.github/workflows/daily.yml` env to deploy. Unit test
+  locks the flag's behavior across falsy variants.
+- **`tests/test_feature_coverage.py`** (commit 6f99844). 10 required
+  feature columns, 80% non-null floor, HOLDOUT slice (2024→present).
+  Would have caught the silent COT outage in Feb 2022. Skips cleanly
+  if `features.parquet` is absent.
+- **Monte Carlo refresh** on corrected cot data (commit 10cfd49). 10k
+  paths × 40-trade horizon: P(final>0, 1yr) = 99.2%, P(ruin) = 0%,
+  mean +1.125 R/trade (was +1.10). Marginally better envelope — a
+  preview of what live looks like after the flag flips.
+
+Test counts: 103 → 114. All green. Updated owner-decisions memo to
+reflect the flag landed and point at the single workflow-edit required
+to execute deploy option (a).
+
 ---
