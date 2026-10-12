@@ -1,0 +1,113 @@
+{
+  "generated_at_utc": "2026-10-12T10:26:38+00:00",
+  "candidate": "bot_v3_seed7_candidate",
+  "model_expectation": {
+    "val_mean_r_net": 0.918234088394138,
+    "val_wr": 0.3473684210526316,
+    "ho_mean_r_net": 0.7342712383030919,
+    "ho_wr": 0.3148148148148148
+  },
+  "shadow_strip": {
+    "n_shadow_days": 10,
+    "direction_mix": {
+      "BUY": 10
+    },
+    "mean_confidence": 0.898021515676209,
+    "first_asof": "2026-09-18",
+    "last_asof": "2026-10-09"
+  },
+  "live_trades": [
+    {
+      "week_of": "2026-09-21",
+      "direction": "LONG",
+      "signal_date": "2026-09-22",
+      "entry_ref_px": 93.30999755859375,
+      "stop_ref_px": 91.69685756262093,
+      "target_ref_px": 103.35034022626769,
+      "max_hold_days": 11,
+      "ref_entry": {
+        "outcome": "STOP",
+        "exit_date": "2026-09-29",
+        "exit_px": 91.69685756262093,
+        "r": -1.0,
+        "days_held": 6
+      },
+      "next_close_entry": {
+        "outcome": "STOP",
+        "exit_date": "2026-09-29",
+        "exit_px": 90.54686366613656,
+        "r": -1.0,
+        "days_held": 4
+      }
+    },
+    {
+      "week_of": "2026-09-28",
+      "direction": "LONG",
+      "signal_date": "2026-10-02",
+      "entry_ref_px": 91.25,
+      "stop_ref_px": 88.5024970561471,
+      "target_ref_px": 108.35072969834846,
+      "max_hold_days": 11,
+      "ref_entry": {
+        "outcome": "STOP",
+        "exit_date": "2026-10-07",
+        "exit_px": 88.5024970561471,
+        "r": -1.0,
+        "days_held": 4
+      },
+      "next_close_entry": {
+        "outcome": "OPEN",
+        "exit_date": "2026-10-12",
+        "exit_px": 92.7300033569336,
+        "r": 1.2010917255397493,
+        "days_held": 5
+      }
+    },
+    {
+      "week_of": "2026-10-05",
+      "direction": "LONG",
+      "signal_date": "2026-10-09",
+      "entry_ref_px": 91.6500015258789,
+      "stop_ref_px": 89.06460444685116,
+      "target_ref_px": 107.74176831006776,
+      "max_hold_days": 11,
+      "ref_entry": {
+        "outcome": "OPEN",
+        "exit_date": "2026-10-12",
+        "exit_px": 92.7300033569336,
+        "r": 0.41773151204333764,
+        "days_held": 2
+      },
+      "next_close_entry": {
+        "outcome": "OPEN",
+        "exit_date": null,
+        "exit_px": null,
+        "r": null,
+        "days_held": 0
+      }
+    }
+  ],
+  "realized_stats": {
+    "ref_entry": {
+      "n": 2,
+      "mean_r": -1.0,
+      "cum_r": -2.0,
+      "wr": 0.0,
+      "worst_r": -1.0,
+      "best_r": -1.0
+    },
+    "next_close_entry": {
+      "n": 1,
+      "mean_r": -1.0,
+      "cum_r": -1.0,
+      "wr": 0.0,
+      "worst_r": -1.0,
+      "best_r": -1.0
+    }
+  },
+  "divergence": {
+    "mean_r_vs_val": -1.918234088394138,
+    "mean_r_vs_ho": -1.734271238303092
+  },
+  "notes": "Mean R is point-estimate on a tiny sample; CI is wide. Treat <5 closed trades as directional-only evidence. True Gate 7 CI requires the full 28-day shadow window."
+}
