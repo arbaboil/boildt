@@ -16,8 +16,8 @@
       "week_end": "2026-10-04",
       "direction": "LONG",
       "outcome": {
-        "net_return_pct": null,
-        "exit_reason": null
+        "net_return_pct": -3.01,
+        "exit_reason": "stop"
       },
       "has_detail": true
     },
@@ -42,5 +42,5 @@
       "has_detail": true
     }
   ],
-  "generated_at_utc": "2026-10-12T21:09:06+00:00"
+  "generated_at_utc": "2026-10-13T21:18:23+00:00"
 }
