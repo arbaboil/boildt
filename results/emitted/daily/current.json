@@ -1,52 +1,52 @@
 {
   "type": "brief",
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-19",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-16T00:00:00+00:00",
-  "published_utc": "2026-10-16T21:21:25+00:00",
+  "signal_date_utc": "2026-10-19T00:00:00+00:00",
+  "published_utc": "2026-10-19T21:21:19+00:00",
   "direction": "SHADOW",
   "shadow_mode": true,
-  "current_price": 99.04000091552734,
-  "atr_20d": 2.9519999237060546,
+  "current_price": 98.23999786376953,
+  "atr_20d": 3.0055003509521483,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.18751540229408206
+      "value": 0.19481773821366183
     },
     "momentum": {
       "vote": 0,
       "weight": 1.3157410969052088,
-      "value": -0.02394367250861388
+      "value": 0.01301179033736019
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": -0.1854695063645974
+      "value": 0.6203641288221688
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.2947234341717072
+      "value": 0.33506133366767654
     },
     "cot": {
       "vote": 0,
       "weight": 0.9811580065464809,
-      "value": -2.855695135662848
+      "value": -2.765655078606269
     },
     "eia": {
       "vote": 0,
       "weight": 1.1274738072894082,
-      "value": 0.0
+      "value": null
     },
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.017328221577238935
+      "value": 0.016639490375861883
     }
   },
-  "confidence": 92,
+  "confidence": 82,
   "score": 0.3686450682723303,
   "message": "HELIOS shadow mode \u2014 this call resolves internally, not for member trading.",
   "primary_risk": {
@@ -58,8 +58,10 @@
     "candidate": "bot_v3_seed7_candidate",
     "protocol_version": "0.2.1",
     "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
-    "coverage": 0.9184366047195975,
-    "null_components": [],
+    "coverage": 0.8247100171580968,
+    "null_components": [
+      "eia"
+    ],
     "helios_version": "0.2.1",
     "kill_switch_engaged": false,
     "kill_switch_reason": null,
@@ -73,8 +75,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 99.04000091552734,
-    "suggested_stop_price_at_entry": 96.81425243534922,
-    "suggested_target_price_at_entry": 112.89327929733714
+    "suggested_entry_price": 98.23999786376953,
+    "suggested_stop_price_at_entry": 95.97391113910989,
+    "suggested_target_price_at_entry": 112.34434546351326
   }
 }
