@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-19T21:21:21+00:00",
+  "generated_at_utc": "2026-10-20T21:22:08+00:00",
   "candidate": "bot_v3_seed7_candidate",
   "model_expectation": {
     "val_mean_r_net": 0.918234088394138,
@@ -8,13 +8,13 @@
     "ho_wr": 0.3148148148148148
   },
   "shadow_strip": {
-    "n_shadow_days": 16,
+    "n_shadow_days": 17,
     "direction_mix": {
-      "BUY": 16
+      "BUY": 17
     },
-    "mean_confidence": 0.899819262344886,
+    "mean_confidence": 0.9009144001316337,
     "first_asof": "2026-09-18",
-    "last_asof": "2026-10-19"
+    "last_asof": "2026-10-20"
   },
   "live_trades": [
     {
@@ -56,11 +56,11 @@
         "days_held": 4
       },
       "next_close_entry": {
-        "outcome": "OPEN",
-        "exit_date": "2026-10-19",
-        "exit_px": 98.23999786376953,
-        "r": 3.206547086074916,
-        "days_held": 10
+        "outcome": "TIME",
+        "exit_date": "2026-10-20",
+        "exit_px": 98.18000030517578,
+        "r": 3.184709963487665,
+        "days_held": 11
       }
     },
     {
@@ -73,17 +73,17 @@
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-19",
-        "exit_px": 98.23999786376953,
-        "r": 2.548930062367379,
-        "days_held": 7
+        "exit_date": "2026-10-20",
+        "exit_px": 98.18000030517578,
+        "r": 2.5257237397949437,
+        "days_held": 8
       },
       "next_close_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-19",
-        "exit_px": 98.23999786376953,
-        "r": 1.7405450158906566,
-        "days_held": 5
+        "exit_date": "2026-10-20",
+        "exit_px": 98.18000030517578,
+        "r": 1.7173386933182213,
+        "days_held": 6
       }
     },
     {
@@ -96,31 +96,31 @@
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-19",
-        "exit_px": 98.23999786376953,
-        "r": -0.35943102236501967,
-        "days_held": 2
+        "exit_date": "2026-10-20",
+        "exit_px": 98.18000030517578,
+        "r": -0.3863871493165018,
+        "days_held": 3
       },
       "next_close_entry": {
-        "outcome": "OPEN",
-        "exit_date": null,
-        "exit_px": null,
-        "r": null,
-        "days_held": 0
+        "outcome": "STOP",
+        "exit_date": "2026-10-20",
+        "exit_px": 101.43425518193125,
+        "r": -1.0,
+        "days_held": 1
       }
     },
     {
       "week_of": "2026-10-19",
       "direction": "LONG",
-      "signal_date": "2026-10-19",
-      "entry_ref_px": 98.23999786376953,
-      "stop_ref_px": 95.97391113910989,
-      "target_ref_px": 112.34434546351326,
+      "signal_date": "2026-10-20",
+      "entry_ref_px": 98.18000030517578,
+      "stop_ref_px": 95.76311770116565,
+      "target_ref_px": 113.22291635237718,
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-19",
-        "exit_px": 98.23999786376953,
+        "exit_date": "2026-10-20",
+        "exit_px": 98.18000030517578,
         "r": 0.0,
         "days_held": 1
       },
@@ -140,12 +140,12 @@
       "best_r": -1.0
     },
     "next_close_entry": {
-      "n": 1,
-      "mean_r": -1.0,
-      "cum_r": -1.0,
-      "wr": 0.0,
+      "n": 3,
+      "mean_r": 0.394903321162555,
+      "cum_r": 1.184709963487665,
+      "wr": 0.3333333333333333,
       "worst_r": -1.0,
-      "best_r": -1.0
+      "best_r": 3.184709963487665
     }
   },
   "divergence": {

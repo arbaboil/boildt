@@ -4,52 +4,52 @@
   "week_end": "2026-10-25",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-19T00:00:00+00:00",
-  "published_utc": "2026-10-19T21:21:19+00:00",
+  "signal_date_utc": "2026-10-20T00:00:00+00:00",
+  "published_utc": "2026-10-20T21:22:06+00:00",
   "direction": "LONG",
   "shadow_mode": false,
-  "current_price": 98.23999786376953,
-  "atr_20d": 3.0055003509521483,
+  "current_price": 98.18000030517578,
+  "atr_20d": 3.205500228881836,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.19481773821366183
+      "value": 0.20620662871952672
     },
     "momentum": {
       "vote": 0,
       "weight": 1.3157410969052088,
-      "value": 0.01301179033736019
+      "value": 0.018192601061946874
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": 0.6203641288221688
+      "value": 0.26681160125138337
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.33506133366767654
+      "value": 0.33009025771125805
     },
     "cot": {
       "vote": 0,
       "weight": 0.9811580065464809,
-      "value": -2.765655078606269
+      "value": -2.6824904135140333
     },
     "eia": {
       "vote": 0,
       "weight": 1.1274738072894082,
-      "value": null
+      "value": 0.0
     },
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.016639490375861883
+      "value": 0.015033596678295983
     }
   },
-  "confidence": 82,
+  "confidence": 92,
   "score": 0.3686450682723303,
-  "message": "2 components confirming long bias; 82% confidence.",
+  "message": "2 components confirming long bias; 92% confidence.",
   "primary_risk": {
     "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
     "severity": "med",
@@ -59,10 +59,8 @@
     "candidate": "bot_v3_seed7_candidate",
     "protocol_version": "0.2.1",
     "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
-    "coverage": 0.8247100171580968,
-    "null_components": [
-      "eia"
-    ],
+    "coverage": 0.9184366047195975,
+    "null_components": [],
     "helios_version": "0.2.1",
     "kill_switch_engaged": false,
     "kill_switch_reason": null,
@@ -76,8 +74,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 98.23999786376953,
-    "suggested_stop_price_at_entry": 95.97391113910989,
-    "suggested_target_price_at_entry": 112.34434546351326
+    "suggested_entry_price": 98.18000030517578,
+    "suggested_stop_price_at_entry": 95.76311770116565,
+    "suggested_target_price_at_entry": 113.22291635237718
   }
 }
