@@ -4,37 +4,37 @@
   "week_end": "2026-10-25",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-20T00:00:00+00:00",
-  "published_utc": "2026-10-20T21:22:06+00:00",
+  "signal_date_utc": "2026-10-22T00:00:00+00:00",
+  "published_utc": "2026-10-22T21:22:34+00:00",
   "direction": "LONG",
   "shadow_mode": false,
-  "current_price": 98.18000030517578,
-  "atr_20d": 3.205500228881836,
+  "current_price": 99.0999984741211,
+  "atr_20d": 3.6929997711181657,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.20620662871952672
+      "value": 0.23482973730500717
     },
     "momentum": {
-      "vote": 0,
+      "vote": 1,
       "weight": 1.3157410969052088,
-      "value": 0.018192601061946874
+      "value": 0.033032016372393364
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": 0.26681160125138337
+      "value": -0.13307245970112216
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.33009025771125805
+      "value": 0.6653765505466284
     },
     "cot": {
       "vote": 0,
       "weight": 0.9811580065464809,
-      "value": -2.6824904135140333
+      "value": -2.5358751945917755
     },
     "eia": {
       "vote": 0,
@@ -44,12 +44,12 @@
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.015033596678295983
+      "value": 0.007048391925693358
     }
   },
   "confidence": 92,
-  "score": 0.3686450682723303,
-  "message": "2 components confirming long bias; 92% confidence.",
+  "score": 0.4780222638488981,
+  "message": "3 components confirming long bias; 92% confidence.",
   "primary_risk": {
     "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
     "severity": "med",
@@ -74,8 +74,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 98.18000030517578,
-    "suggested_stop_price_at_entry": 95.76311770116565,
-    "suggested_target_price_at_entry": 113.22291635237718
+    "suggested_entry_price": 99.0999984741211,
+    "suggested_stop_price_at_entry": 96.31555103499477,
+    "suggested_target_price_at_entry": 116.43067436012566
   }
 }

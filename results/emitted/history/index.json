@@ -16,7 +16,7 @@
       "week_end": "2026-10-04",
       "direction": "LONG",
       "outcome": {
-        "net_return_pct": 10.53,
+        "net_return_pct": 4.54,
         "exit_reason": "max_hold"
       },
       "has_detail": true
@@ -26,8 +26,8 @@
       "week_end": "2026-10-11",
       "direction": "LONG",
       "outcome": {
-        "net_return_pct": 7.12,
-        "exit_reason": "max_hold"
+        "net_return_pct": 17.56,
+        "exit_reason": "target"
       },
       "has_detail": true
     },
@@ -52,5 +52,5 @@
       "has_detail": true
     }
   ],
-  "generated_at_utc": "2026-10-20T21:22:07+00:00"
+  "generated_at_utc": "2026-10-22T21:22:35+00:00"
 }
