@@ -1,0 +1,31 @@
+{
+  "as_of": "2026-10-28",
+  "requested_asof": "2026-10-28",
+  "instrument": "WTI",
+  "engine": "candidate:bot_v3_seed7_candidate",
+  "is_candidate": true,
+  "read": "BUY",
+  "confidence": 0.9184366047195975,
+  "score": 0.4780222638488981,
+  "coverage": 0.9184366047195975,
+  "levels": {
+    "ref": 100.23999786376953,
+    "atr20": 2.6019996185302743,
+    "atr_k_stop": 0.7539798569451991,
+    "atr_k_target": 4.692845101573669,
+    "stop_long_at": 98.27814256361862,
+    "target_long_at": 112.45077902788589
+  },
+  "votes": {
+    "trend": 1,
+    "momentum": 1,
+    "vol": 0,
+    "curve": 1,
+    "cot": 0,
+    "eia": 0,
+    "macro": 0
+  },
+  "shadow_only": true,
+  "helios_version": "0.1.0",
+  "logged_at_utc": "2026-10-28T00:13:17+00:00"
+}

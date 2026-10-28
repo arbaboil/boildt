@@ -1,39 +1,39 @@
 {
   "type": "brief",
-  "as_of": "2026-10-27",
+  "as_of": "2026-10-28",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-27T00:00:00+00:00",
-  "published_utc": "2026-10-27T00:11:18+00:00",
+  "signal_date_utc": "2026-10-28T00:00:00+00:00",
+  "published_utc": "2026-10-28T00:13:18+00:00",
   "direction": "SHADOW",
   "shadow_mode": true,
-  "current_price": 101.30999755859375,
-  "atr_20d": 2.599499633789064,
+  "current_price": 100.23999786376953,
+  "atr_20d": 2.6019996185302743,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.25593207650683675
+      "value": 0.258652054873455
     },
     "momentum": {
       "vote": 1,
       "weight": 1.3157410969052088,
-      "value": 0.05217162818031447
+      "value": 0.031002360298897805
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": 0.5002194031437813
+      "value": 0.2579209120705606
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.014607185746674271
+      "value": 0.09003023729868892
     },
     "cot": {
       "vote": 0,
       "weight": 0.9811580065464809,
-      "value": -2.5304347495451376
+      "value": -2.4640357353876587
     },
     "eia": {
       "vote": 0,
@@ -43,7 +43,7 @@
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.002398187572487161
+      "value": 0.00289653695546358
     }
   },
   "confidence": 92,
@@ -73,8 +73,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 101.30999755859375,
-    "suggested_stop_price_at_entry": 99.35002719658037,
-    "suggested_target_price_at_entry": 113.5090466815633
+    "suggested_entry_price": 100.23999786376953,
+    "suggested_stop_price_at_entry": 98.27814256361862,
+    "suggested_target_price_at_entry": 112.45077902788589
   }
 }
