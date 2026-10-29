@@ -4,37 +4,37 @@
   "week_end": "2026-11-01",
   "schema_version": 1,
   "instrument": "WTI",
-  "signal_date_utc": "2026-10-28T00:00:00+00:00",
-  "published_utc": "2026-10-28T00:13:18+00:00",
+  "signal_date_utc": "2026-10-29T00:00:00+00:00",
+  "published_utc": "2026-10-29T00:33:54+00:00",
   "direction": "LONG",
   "shadow_mode": false,
-  "current_price": 100.23999786376953,
-  "atr_20d": 2.6019996185302743,
+  "current_price": 102.29000091552734,
+  "atr_20d": 2.334999954223634,
   "signal_components": {
     "trend": {
       "vote": 1,
       "weight": 0.6056043325584309,
-      "value": 0.258652054873455
+      "value": 0.3147094928398935
     },
     "momentum": {
-      "vote": 1,
+      "vote": 0,
       "weight": 1.3157410969052088,
-      "value": 0.031002360298897805
+      "value": 0.024944388493811444
     },
     "vol": {
       "vote": 0,
       "weight": 2.1029564843449426,
-      "value": 0.2579209120705606
+      "value": 0.058801851645738416
     },
     "curve": {
       "vote": 1,
       "weight": 3.8289714850102854,
-      "value": 0.09003023729868892
+      "value": -0.042126232584670666
     },
     "cot": {
       "vote": 0,
       "weight": 0.9811580065464809,
-      "value": -2.4640357353876587
+      "value": -2.4017380263865182
     },
     "eia": {
       "vote": 0,
@@ -44,12 +44,12 @@
     "macro": {
       "vote": 0,
       "weight": 2.0674861972223137,
-      "value": 0.00289653695546358
+      "value": -0.0038501390994233743
     }
   },
   "confidence": 92,
-  "score": 0.4780222638488981,
-  "message": "3 components confirming long bias; 92% confidence.",
+  "score": 0.3686450682723303,
+  "message": "2 components confirming long bias; 92% confidence.",
   "primary_risk": {
     "sentence": "Primary risk: DXY strength or curve flip reversing the bid.",
     "severity": "med",
@@ -74,8 +74,8 @@
     "stop_atr_mult": 0.7539798569451991,
     "target_atr_mult": 4.692845101573669,
     "hold_days_max": 11,
-    "suggested_entry_price": 100.23999786376953,
-    "suggested_stop_price_at_entry": 98.27814256361862,
-    "suggested_target_price_at_entry": 112.45077902788589
+    "suggested_entry_price": 102.29000091552734,
+    "suggested_stop_price_at_entry": 100.52945798407477,
+    "suggested_target_price_at_entry": 113.24779401288046
   }
 }

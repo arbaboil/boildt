@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-28T00:13:19+00:00",
+  "generated_at_utc": "2026-10-29T00:33:55+00:00",
   "candidate_stem": "bot_v3_seed7_candidate",
   "verdict": {
     "ready_v020": true,
@@ -7,7 +7,7 @@
     "protocol_version": "0.2.1",
     "live_status": "LIVE",
     "blocking_reasons": [
-      "Gate 7 shadow: 7 days remaining (21/28)"
+      "Gate 7 shadow: 6 days remaining (22/28)"
     ],
     "v020_green_light": false,
     "green_light": false,
@@ -21,7 +21,7 @@
       "drift_monitor": {
         "present": true,
         "drift_detected": false,
-        "checked_at_utc": "2026-10-28T00:13:19+00:00",
+        "checked_at_utc": "2026-10-29T00:33:55+00:00",
         "override_active": true,
         "n_failing_categories": 0
       }
@@ -111,10 +111,10 @@
   },
   "shadow": {
     "status": "present",
-    "n_days": 21,
+    "n_days": 22,
     "first_day": "20260918.json",
-    "last_day": "20261028.json",
-    "days_until_gate7_pass": 7
+    "last_day": "20261029.json",
+    "days_until_gate7_pass": 6
   },
   "sweep_evidence": {
     "fresh_seed": {

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-28T00:13:19+00:00",
+  "generated_at_utc": "2026-10-29T00:33:56+00:00",
   "candidate": "bot_v3_seed7_candidate",
   "model_expectation": {
     "val_mean_r_net": 0.918234088394138,
@@ -8,13 +8,13 @@
     "ho_wr": 0.3148148148148148
   },
   "shadow_strip": {
-    "n_shadow_days": 21,
+    "n_shadow_days": 22,
     "direction_mix": {
-      "BUY": 21
+      "BUY": 22
     },
-    "mean_confidence": 0.9042519629102935,
+    "mean_confidence": 0.9048967193561711,
     "first_asof": "2026-09-18",
-    "last_asof": "2026-10-28"
+    "last_asof": "2026-10-29"
   },
   "live_trades": [
     {
@@ -80,9 +80,9 @@
       },
       "next_close_entry": {
         "outcome": "TIME",
-        "exit_date": "2026-10-28",
-        "exit_px": 100.23999786376953,
-        "r": 2.5141205785087264,
+        "exit_date": "2026-10-27",
+        "exit_px": 99.9000015258789,
+        "r": 2.3826141493228143,
         "days_held": 11
       }
     },
@@ -96,10 +96,10 @@
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-28",
-        "exit_px": 100.23999786376953,
-        "r": 0.5391431057592599,
-        "days_held": 8
+        "exit_date": "2026-10-29",
+        "exit_px": 102.29000091552734,
+        "r": 1.4601829582019543,
+        "days_held": 9
       },
       "next_close_entry": {
         "outcome": "STOP",
@@ -119,31 +119,31 @@
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "STOP",
-        "exit_date": "2026-10-28",
+        "exit_date": "2026-10-27",
         "exit_px": 100.89343549758348,
         "r": -1.0,
         "days_held": 3
       },
       "next_close_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-28",
-        "exit_px": 100.23999786376953,
-        "r": -0.5968836892931586,
-        "days_held": 1
+        "exit_date": "2026-10-29",
+        "exit_px": 102.29000091552734,
+        "r": 0.20812285362554406,
+        "days_held": 2
       }
     },
     {
       "week_of": "2026-10-26",
       "direction": "LONG",
-      "signal_date": "2026-10-28",
-      "entry_ref_px": 100.23999786376953,
-      "stop_ref_px": 98.27814256361862,
-      "target_ref_px": 112.45077902788589,
+      "signal_date": "2026-10-29",
+      "entry_ref_px": 102.29000091552734,
+      "stop_ref_px": 100.52945798407477,
+      "target_ref_px": 113.24779401288046,
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-10-28",
-        "exit_px": 100.23999786376953,
+        "exit_date": "2026-10-29",
+        "exit_px": 102.29000091552734,
         "r": 0.0,
         "days_held": 1
       },
@@ -164,8 +164,8 @@
     },
     "next_close_entry": {
       "n": 4,
-      "mean_r": 1.2531877758414742,
-      "cum_r": 5.012751103365897,
+      "mean_r": 1.2203111685449963,
+      "cum_r": 4.881244674179985,
       "wr": 0.5,
       "worst_r": -1.0,
       "best_r": 4.4986305248571705
