@@ -316,6 +316,9 @@ def _emit_backtest_summary(audit_path: Path) -> dict | None:
     return {
         "type": "backtest_summary",
         "schema_version": SCHEMA_VERSION,
+        # Additive field (Vega-approved 2026-11-10): lets the site pick the
+        # newer of R2 vs GitHub copies.
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "candidate": Path(audit["candidate_source"]).stem,
         "protocol_version": HELIOS_VERSION,
         "slices": slices,

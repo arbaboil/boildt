@@ -31,10 +31,9 @@ import pandas as pd
 def _cot_enabled() -> bool:
     """Read HELIOS_COT_ENABLED env var; default True (research mode).
 
-    Daily cron workflow (`.github/workflows/daily.yml`) pins this to
-    `false` until Owner approves the COT fix. This preserves the live
-    behavior that existed when `cot_mm_net_wti` was silently NaN
-    (2022-02 → 2026-10-12). Flip the workflow env to `true` on approval.
+    The daily cron (`.github/workflows/daily.yml`) has set this to `true`
+    since 2026-11-10 (COT fix live ahead of W47). Set it to `false` there to
+    roll back to the pre-fix behavior (COT vote always 0).
     """
     v = os.environ.get("HELIOS_COT_ENABLED", "true").strip().lower()
     return v not in {"0", "false", "no", "off"}

@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
@@ -195,6 +196,8 @@ def main() -> int:
     features = features.sort_values("date").reset_index(drop=True)
 
     payload = build_curve(features, vote_cfg, trade_cfg, args.holdout_start)
+    # Additive top-level field (Vega-approved 2026-11-10): newer-of R2/GitHub.
+    payload["generated_at_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")

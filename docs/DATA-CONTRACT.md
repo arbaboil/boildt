@@ -118,6 +118,11 @@ Same shape as `weekly/current.json`, with:
 
 ## `backtest/summary.json` schema
 
+> **2026-11-10:** `backtest/summary.json` and `backtest/curve.json` both carry a
+> top-level `generated_at_utc` (ISO-8601 UTC, rewritten every pipeline run).
+> The site serves whichever of R2 / GitHub is newer by this field. If only one
+> copy has it, that copy wins; if neither does, GitHub wins.
+
 Static per candidate. Emitted once when a new PROTOCOL version + candidate
 lands.
 
@@ -125,6 +130,7 @@ lands.
 {
   "type": "backtest_summary",
   "schema_version": 1,
+  "generated_at_utc": "2026-11-10T22:31:05+00:00", // added 2026-11-10 (Vega-approved, additive)
   "candidate": "bot_v3_seed7_candidate",
   "protocol_version": "0.1.0",
   "slices": {
