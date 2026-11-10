@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-04T01:00:56+00:00",
+  "generated_at_utc": "2026-11-10T03:06:57+00:00",
   "candidate": "bot_v3_seed7_candidate",
   "model_expectation": {
     "val_mean_r_net": 0.918234088394138,
@@ -8,13 +8,14 @@
     "ho_wr": 0.3148148148148148
   },
   "shadow_strip": {
-    "n_shadow_days": 23,
+    "n_shadow_days": 24,
     "direction_mix": {
-      "BUY": 23
+      "BUY": 23,
+      "SELL": 1
     },
-    "mean_confidence": 0.9054854100241462,
+    "mean_confidence": 0.9060250431364564,
     "first_asof": "2026-09-18",
-    "last_asof": "2026-11-04"
+    "last_asof": "2026-11-10"
   },
   "live_trades": [
     {
@@ -164,10 +165,33 @@
       "target_ref_px": 108.73793174289156,
       "max_hold_days": 11,
       "ref_entry": {
-        "outcome": "OPEN",
+        "outcome": "STOP",
         "exit_date": "2026-11-04",
-        "exit_px": 96.55999755859375,
-        "r": 0.0,
+        "exit_px": 94.60341964574384,
+        "r": -1.0,
+        "days_held": 1
+      },
+      "next_close_entry": {
+        "outcome": "STOP",
+        "exit_date": "2026-11-09",
+        "exit_px": 88.5634187302165,
+        "r": -1.0,
+        "days_held": 2
+      }
+    },
+    {
+      "week_of": "2026-11-09",
+      "direction": "SHORT",
+      "signal_date": "2026-11-10",
+      "entry_ref_px": 85.91999816894531,
+      "stop_ref_px": 88.39041317022625,
+      "target_ref_px": 70.54389119363918,
+      "max_hold_days": 11,
+      "ref_entry": {
+        "outcome": "OPEN",
+        "exit_date": "2026-11-10",
+        "exit_px": 85.91999816894531,
+        "r": -0.0,
         "days_held": 1
       },
       "next_close_entry": {
@@ -178,25 +202,25 @@
   ],
   "realized_stats": {
     "ref_entry": {
-      "n": 6,
-      "mean_r": 0.462808539717271,
-      "cum_r": 2.776851238303626,
-      "wr": 0.3333333333333333,
+      "n": 7,
+      "mean_r": 0.2538358911862323,
+      "cum_r": 1.776851238303626,
+      "wr": 0.2857142857142857,
       "worst_r": -1.0,
       "best_r": 4.494472130198771
     },
     "next_close_entry": {
-      "n": 6,
-      "mean_r": 0.4802074456966641,
-      "cum_r": 2.881244674179985,
-      "wr": 0.3333333333333333,
+      "n": 7,
+      "mean_r": 0.26874923916856924,
+      "cum_r": 1.8812446741799849,
+      "wr": 0.2857142857142857,
       "worst_r": -1.0,
       "best_r": 4.4986305248571705
     }
   },
   "divergence": {
-    "mean_r_vs_val": -0.455425548676867,
-    "mean_r_vs_ho": -0.27146269858582095
+    "mean_r_vs_val": -0.6643981972079057,
+    "mean_r_vs_ho": -0.48043534711685965
   },
   "notes": "Mean R is point-estimate on a tiny sample; CI is wide. Treat <5 closed trades as directional-only evidence. True Gate 7 CI requires the full 28-day shadow window."
 }
