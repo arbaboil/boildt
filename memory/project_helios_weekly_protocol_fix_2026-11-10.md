@@ -14,3 +14,5 @@ Found 2026-11-10 while answering Vega's relay (publish timing, live status, R2).
 
 **Why:** Vega/social treat every LONG/SHORT as a tracked call and the on-chain Forecast Registry records the call at publish time from W47 on.
 **How to apply:** Never let a published weekly be recomputed. Any change to the call or grading semantics needs a regrade memo + a Vega note. Related: [[feedback-verify-live-matches-validated-rule]]
+
+**Vega ack 2026-11-10:** /oil dims pre-W47 weeks with the tag "pre-fix protocol, regraded". WR counts live-tracked weeks only. Beta note says live from 2026-11-16. GitHub stays the fallback (the site uses whichever of R2/GitHub is newer). Friday-close + publish-by-Saturday + freeze-on-publish confirmed compatible with the Forecast Registry. Next step: check the 2026-11-10 22:30 UTC cron's R2 prod upload. If it fails on token scope, tell Vega and Farhad issues a prod token.
