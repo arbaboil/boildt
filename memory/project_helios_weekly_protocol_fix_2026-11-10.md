@@ -9,7 +9,8 @@ Found 2026-11-10 while answering Vega's relay (publish timing, live status, R2).
 - Weekly call is now: Friday-close read (completed-bar rule, 22:00 UTC) -> week_of next Monday -> frozen on first publish. Publish slots: Fri 22:30 UTC run, backstops SAT 12:00 / SUN 12:00 / SUN 19:00 UTC.
 - Grader = backtest-identical (entry = first close after signal bar). Regraded record: 7 resolved, +11.08%, WR 2/7 (old site said +13.94% on 6).
 - Owner decisions 2026-11-10: push + keep archives (regrade only); RIG "live" from W47; weeks before 11-16 labeled pre-fix.
-- Open Owner items: drift confidence-outlier check miscalibrated (sigma 2.6 around 92) and will now actually force SHADOW on trip; R2 prod token scope untested (first prod upload = 2026-11-10 22:30 UTC cron). The repo token can't dispatch workflows (403 admin).
+- Drift confidence-outlier sigma floored at 10 pts (Owner 2026-11-10); a trip needs |delta| > 20.
+- Open: R2 prod token scope untested (first prod upload = 2026-11-10 22:30 UTC cron). The repo token can't dispatch workflows (403 admin).
 - Full details: docs/memos/2026-11-10_weekly_protocol_fix_and_regrade.md
 
 **Why:** Vega/social treat every LONG/SHORT as a tracked call and the on-chain Forecast Registry records the call at publish time from W47 on.

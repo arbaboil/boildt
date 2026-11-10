@@ -12,7 +12,7 @@ Checks (any FAIL → drift flag):
      ATR within [0.5%, 10%] of price.
   2. priceStep bounds — suggested stop within [0.5×, 1.5×] price.
   3. Confidence outlier — today's confidence within [median − 2σ, median + 2σ]
-     of the last 14 shadow entries (or all if <14).
+     of the last 14 shadow entries (or all if <14), σ floored at 10 points.
   4. Direction churn — no more than 2 direction flips in the last 5 shadow
      days (churn = signal noise).
   5. Coverage — at least min_coverage of the vote components have values.
@@ -53,6 +53,7 @@ ATR_PCT_MAX = 0.10
 PRICE_STOP_LOW = 0.5
 PRICE_STOP_HIGH = 1.5
 CONFIDENCE_Z_THRESHOLD = 2.0
+CONFIDENCE_SIGMA_FLOOR = 10.0  # confidence points (0-100); Owner 2026-11-10
 DIRECTION_CHURN_MAX = 2   # flips per 5 days
 COVERAGE_MIN = 0.30
 LOOKBACK_DAYS = 14        # for confidence-outlier baseline
@@ -121,11 +122,13 @@ def check_confidence_outlier(w: dict, history: list[dict]) -> list[str]:
         past = [p * 100 for p in past]
     med = statistics.median(past)
     try:
-        sig = statistics.stdev(past)
+        raw_sig = statistics.stdev(past)
     except statistics.StatisticsError:
         return []
-    if sig < 1e-6:
-        return []
+    # Owner 2026-11-10: floor sigma at CONFIDENCE_SIGMA_FLOOR points. The
+    # 14-day baseline sat at median 92 / sigma 2.6, so ordinary confidence
+    # moves tripped z>2. With the floor, a trip needs a |delta| > 20 pts.
+    sig = max(raw_sig, CONFIDENCE_SIGMA_FLOOR)
     z = abs(today - med) / sig
     if z > CONFIDENCE_Z_THRESHOLD:
         return [f"confidence outlier: today={today:.0f} median={med:.0f} "
