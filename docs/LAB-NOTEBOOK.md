@@ -520,3 +520,41 @@ reflect the flag landed and point at the single workflow-edit required
 to execute deploy option (a).
 
 ---
+
+## 2026-11-10 — Vega relay: live status, publish timing, R2 → protocol fix
+
+Trigger: Vega asked (1) confirm RIG is live, (2) publish before the week
+opens, (3) R2 prod uploads. The investigation found the live weekly call
+did not implement the validated rule.
+
+- **Bugs:** the weekly call was re-priced every weekday and its archive
+  overwritten; late crons read in-progress Yahoo bars; the grader used
+  closes known at publish time (look-ahead); the drift flag tripped 4×
+  (10-30, 11-03, 11-05, 11-06) but never persisted (the workflow aborted
+  before commit); Friday runs slipping past midnight UTC false-failed the
+  stale guard; R2 uploads only ever went to staging.
+- **Fixes (32ad319):** Friday-close signal → next-Monday week, frozen on
+  first publish; completed-bar rule (22:00 UTC); backtest-identical
+  grader; drift check before archive; commit + R2 steps always(); prod +
+  staging upload; Sat/Sun publish backstops with day-name crons.
+- **Regrade (24500dd, Owner: keep archives):** 7 resolved, +11.08%,
+  WR 2/7 (site had shown +13.94% on 6). Vega now dims pre-W47 weeks as
+  "pre-fix protocol, regraded". RIG is live-tracked from W47 (2026-11-16).
+- **Drift σ floor 10 (db4ca6c, Owner).** A trip needs |Δconf| > 20.
+- **Delegated decisions (fd8ab4b):** COT vote enabled before W47
+  (re-audit: all gates pass, HOLDOUT CI low +0.21 → +0.37, WF 10/10;
+  audit JSON refreshed); NYMEX holiday calendar in the stale guard;
+  Ubuntu pin kept; autotrader review moved to 12 resolved live calls
+  (~Feb 2027).
+- **generated_at_utc** added to backtest/summary.json + curve.json
+  (cb37995, Vega-approved) so the site serves the newer of R2 vs GitHub.
+
+Tests 114 → 126, all green. Memos:
+docs/memos/2026-11-10_weekly_protocol_fix_and_regrade.md,
+docs/memos/2026-11-10_cot_enable_and_followups.md.
+
+**Next:** check the 2026-11-10 22:30 UTC run's R2 prod upload (token
+scope); check the W47 publish on Sat 2026-11-14 (Friday-close, COT on,
+frozen).
+
+---
