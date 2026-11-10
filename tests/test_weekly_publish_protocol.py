@@ -100,3 +100,14 @@ def test_archive_never_overwrites(tmp_path, monkeypatch):
     cur.write_text(json.dumps({"week_of": "2026-11-16", "direction": "SHORT"}))
     eh._archive_current_weekly()
     assert json.loads((hist / "2026-11-16-weekly.json").read_text())["direction"] == "LONG"
+
+
+def test_nymex_holidays():
+    from src.util.session import is_nymex_holiday, last_trading_day_on_or_before
+    assert is_nymex_holiday(T("2026-11-26"))          # Thanksgiving
+    assert is_nymex_holiday(T("2026-12-25"))          # Christmas (Fri)
+    assert is_nymex_holiday(T("2026-04-03"))          # Good Friday 2026
+    assert not is_nymex_holiday(T("2026-11-11"))      # Veterans Day trades
+    assert not is_nymex_holiday(T("2026-10-12"))      # Columbus Day trades
+    # Thanksgiving-night run expects Wednesday's bar, not a stale fail.
+    assert last_trading_day_on_or_before(last_complete_bar_date(T("2026-11-26 22:30"))) == T("2026-11-25")

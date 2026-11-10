@@ -68,3 +68,39 @@ def week_of_for_signal_friday(friday) -> tuple[str, str]:
     """(Monday, Sunday) of the week the Friday signal is traded in."""
     monday = _as_utc(friday).normalize() + pd.Timedelta(days=3)
     return str(monday.date()), str((monday + pd.Timedelta(days=6)).date())
+
+
+# ---------------------------------------------------------------------------
+# NYMEX full-close holidays (no WTI settlement). Columbus / Veterans Day are
+# trading days, so pandas' US federal calendar is NOT used. Good Friday is a
+# close. Used so a weekday-holiday run expects the prior session's data
+# instead of failing the stale-data guard (e.g. Thanksgiving 2026-11-26).
+from pandas.tseries.holiday import (AbstractHolidayCalendar, GoodFriday,  # noqa: E402
+                                    Holiday, USLaborDay, USMartinLutherKingJr,
+                                    USMemorialDay, USPresidentsDay,
+                                    USThanksgivingDay, nearest_workday)
+
+
+class NymexHolidayCalendar(AbstractHolidayCalendar):
+    rules = [
+        Holiday("NewYearsDay", month=1, day=1, observance=nearest_workday),
+        USMartinLutherKingJr, USPresidentsDay, GoodFriday, USMemorialDay,
+        Holiday("Juneteenth", month=6, day=19, start_date="2022-01-01",
+                observance=nearest_workday),
+        Holiday("IndependenceDay", month=7, day=4, observance=nearest_workday),
+        USLaborDay, USThanksgivingDay,
+        Holiday("Christmas", month=12, day=25, observance=nearest_workday),
+    ]
+
+
+def is_nymex_holiday(d) -> bool:
+    d = _as_utc(d).normalize().tz_localize(None)
+    return d in NymexHolidayCalendar().holidays(d - pd.Timedelta(days=7),
+                                                 d + pd.Timedelta(days=7))
+
+
+def last_trading_day_on_or_before(d) -> pd.Timestamp:
+    d = last_weekday_on_or_before(d)
+    while is_nymex_holiday(d):
+        d = last_weekday_on_or_before(d - pd.Timedelta(days=1))
+    return d

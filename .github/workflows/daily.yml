@@ -47,9 +47,11 @@ concurrency:
 
 jobs:
   run-pipeline:
-    # Pinned to ubuntu-24.04 to prevent the 2026-10-19 ubuntu-latest migration
-    # to Ubuntu 26 from disturbing the Gate 7 shadow window (closes ~2026-10-27).
-    # Revisit after ship: flip back to ubuntu-latest.
+    # Pinned to ubuntu-24.04. Decision 2026-11-10: KEEP pinned while the
+    # live-tracked record (from 2026-11-16) builds - no environment changes
+    # under a fresh track record. Revisit at the autotrader review gate
+    # (docs/memos/2026-11-10_cot_enable_and_followups.md) or when GitHub
+    # announces 24.04 deprecation, whichever comes first.
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -82,13 +84,13 @@ jobs:
       - name: Run daily pipeline (LIVE — weekly out of shadow per PROTOCOL v0.2.1)
         env:
           PYTHONIOENCODING: utf-8
-          # Keep cot vote at 0 in live until Owner approves the 2026-10-12 fix.
-          # Pre-fix, cot_mm_net_wti was silently NaN since 2022-02 (CFTC rename
-          # of the WTI NYMEX contract). Fix landed in commit 750d979 but needs
-          # explicit Owner sign-off before changing live model behavior. Flip
-          # this to "true" to enable cot vote on next cron run. See
-          # docs/memos/2026-10-12_owner_decisions_cot_fix_and_v2.md.
-          HELIOS_COT_ENABLED: "false"
+          # COT vote ENABLED 2026-11-10 (Owner delegated decision; option (a)
+          # from docs/memos/2026-10-12_owner_decisions_cot_fix_and_v2.md).
+          # Flipped before W47 so the whole live-tracked record (from
+          # 2026-11-16) runs on one model. Re-audit on 2026-11-10 data: all
+          # v0.2.0 gates pass; HOLDOUT Sharpe CI low +0.21 -> +0.37, DD 8.8R -> 6.8R.
+          # See docs/memos/2026-11-10_cot_enable_and_followups.md.
+          HELIOS_COT_ENABLED: "true"
         run: |
           python scripts/daily_pipeline.py \
             --candidate results/bots/bot_v3_seed7_candidate.json \
