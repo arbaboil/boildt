@@ -11,6 +11,7 @@ import pandas as pd
 
 from src.features import indicators as I
 from src.util.paths import DATA_PROCESSED
+from src.util.session import drop_incomplete_bars
 
 
 def build_features(master: pd.DataFrame | None = None,
@@ -29,6 +30,10 @@ def build_features(master: pd.DataFrame | None = None,
     persist = persist_default if write is None else write
 
     df = master.copy().sort_values("date").reset_index(drop=True)
+    if persist_default:
+        # Live path only: never let an in-progress bar into the feature
+        # store (see src/util/session.py, completed-bar rule).
+        df = drop_incomplete_bars(df)
 
     # Master parquet is on a business-day calendar; US market holidays land
     # as NaN closes. Rolling indicators with min_periods=window fail whenever

@@ -3,7 +3,8 @@ name: daily-shadow-log
 # Runs the daily pipeline (pull -> features -> shadow_log -> emit) and
 # commits the results back so the shadow window accumulates automatically.
 #
-# Schedule: 21:00 UTC daily (post US-close). Also manually triggerable
+# Schedule: 22:30 UTC Mon-Fri (after the 22:00 UTC completed-bar cutoff,
+# src/util/session.py) + Sat/Sun weekly-call publish backstops. Also manually triggerable
 # via the "Run workflow" button in the GitHub Actions tab.
 #
 # ============================================================
@@ -25,7 +26,16 @@ on:
     # Weekdays only. US oil markets are closed Sat/Sun so no fresh price
     # data arrives; a Sat/Sun run would fail on shadow_log's stale-data
     # guard. Fri 21:00 UTC catches the Fri close (5pm ET EDT).
-    - cron: '0 21 * * 1-5'
+    - cron: '30 22 * * MON-FRI'
+    # Weekly-call publish slots (added 2026-11-10, Vega ask: publish before
+    # the week opens, deadline Mon 00:30 UTC). The weekly call is computed
+    # on Friday's close and frozen on first publish, so the Fri 21:00 run
+    # usually publishes it (once the Friday bar is complete). These weekend
+    # runs are backstops for GitHub's multi-hour cron slip. Day NAMES on
+    # purpose - see AXIS's numeric-weekday bug (2026-11-10).
+    - cron: '0 12 * * SAT'
+    - cron: '0 12 * * SUN'
+    - cron: '0 19 * * SUN'
   workflow_dispatch:
 
 permissions:
@@ -86,6 +96,8 @@ jobs:
             --live
 
       - name: Drift monitor (compensating control for early-ship override)
+        # The gating check now runs inside daily_pipeline.py BEFORE the weekly
+        # is archived. This re-check only makes a trip visible as a red run.
         env:
           PYTHONIOENCODING: utf-8
         run: |
@@ -111,7 +123,8 @@ jobs:
           # should not break the shadow commit.
           python scripts/shadow_strip_audit.py || true
 
-      - name: Upload emitted artifacts to R2 (staging)
+      - name: Upload emitted artifacts to R2 (prod + staging)
+        if: always()
         env:
           # R2 upload uses the S3-compatible endpoint. Secrets are added
           # by Owner via the GitHub repo Secrets UI. If any secret is
@@ -120,7 +133,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET: helios-data-staging
+          R2_BUCKETS: helios-data-prod helios-data-staging
         run: |
           if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$R2_ACCOUNT_ID" ]; then
             echo "R2 credentials not configured — skipping upload."
@@ -128,49 +141,58 @@ jobs:
           fi
           pip install --quiet awscli
           ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
-          # Emitted call/brief/backtest artifacts + equity curve
-          for KEY in weekly/current.json daily/current.json backtest/summary.json backtest/curve.json; do
-            SRC="results/emitted/${KEY}"
-            if [ -f "$SRC" ]; then
-              aws s3 cp "$SRC" "s3://${R2_BUCKET}/${KEY}" \
+          UPLOAD_FAILED=0
+          for R2_BUCKET in $R2_BUCKETS; do (
+            set -e
+            # Emitted call/brief/backtest artifacts + equity curve
+            for KEY in weekly/current.json daily/current.json backtest/summary.json backtest/curve.json; do
+              SRC="results/emitted/${KEY}"
+              if [ -f "$SRC" ]; then
+                aws s3 cp "$SRC" "s3://${R2_BUCKET}/${KEY}" \
+                  --endpoint-url "$ENDPOINT" \
+                  --content-type application/json \
+                  --cache-control "public, max-age=30, s-maxage=30"
+                echo "Uploaded ${KEY} to ${R2_BUCKET}"
+              fi
+            done
+            # Shadow-strip audit — not a site-rendered artifact, but useful
+            # for Owner/Vega dashboards checking realized vs expected R.
+            if [ -f "results/shadow_audit.json" ]; then
+              aws s3 cp "results/shadow_audit.json" "s3://${R2_BUCKET}/audit/shadow_audit.json" \
                 --endpoint-url "$ENDPOINT" \
                 --content-type application/json \
                 --cache-control "public, max-age=30, s-maxage=30"
-              echo "Uploaded ${KEY} to ${R2_BUCKET}"
+              echo "Uploaded audit/shadow_audit.json to ${R2_BUCKET}"
             fi
+            # Weekly history — index + per-week snapshots. Recursive upload;
+            # aws s3 cp handles the whole directory in one call.
+            if [ -d "results/emitted/history" ]; then
+              aws s3 cp results/emitted/history/ "s3://${R2_BUCKET}/history/" \
+                --recursive \
+                --endpoint-url "$ENDPOINT" \
+                --content-type application/json \
+                --cache-control "public, max-age=30, s-maxage=30"
+              echo "Uploaded history/ to ${R2_BUCKET}"
+            fi
+            # Kill-switch: uploaded so site-loader can render-time check (per
+            # DEPLOY-PLAN §Site-loader behavior). Owner writes admin/killswitch.json
+            # in the repo; cron mirrors it to R2. Cache TTL matches AXIS convention
+            # (30s) so a flip propagates fast.
+            if [ -f "admin/killswitch.json" ]; then
+              aws s3 cp "admin/killswitch.json" "s3://${R2_BUCKET}/admin/killswitch.json" \
+                --endpoint-url "$ENDPOINT" \
+                --content-type application/json \
+                --cache-control "public, max-age=30, s-maxage=30"
+              echo "Uploaded admin/killswitch.json to ${R2_BUCKET}"
+            fi
+            ) || { echo "::warning::R2 upload to ${R2_BUCKET} failed (token scope?)"; UPLOAD_FAILED=1; }
           done
-          # Shadow-strip audit — not a site-rendered artifact, but useful
-          # for Owner/Vega dashboards checking realized vs expected R.
-          if [ -f "results/shadow_audit.json" ]; then
-            aws s3 cp "results/shadow_audit.json" "s3://${R2_BUCKET}/audit/shadow_audit.json" \
-              --endpoint-url "$ENDPOINT" \
-              --content-type application/json \
-              --cache-control "public, max-age=30, s-maxage=30"
-            echo "Uploaded audit/shadow_audit.json to ${R2_BUCKET}"
-          fi
-          # Weekly history — index + per-week snapshots. Recursive upload;
-          # aws s3 cp handles the whole directory in one call.
-          if [ -d "results/emitted/history" ]; then
-            aws s3 cp results/emitted/history/ "s3://${R2_BUCKET}/history/" \
-              --recursive \
-              --endpoint-url "$ENDPOINT" \
-              --content-type application/json \
-              --cache-control "public, max-age=30, s-maxage=30"
-            echo "Uploaded history/ to ${R2_BUCKET}"
-          fi
-          # Kill-switch: uploaded so site-loader can render-time check (per
-          # DEPLOY-PLAN §Site-loader behavior). Owner writes admin/killswitch.json
-          # in the repo; cron mirrors it to R2. Cache TTL matches AXIS convention
-          # (30s) so a flip propagates fast.
-          if [ -f "admin/killswitch.json" ]; then
-            aws s3 cp "admin/killswitch.json" "s3://${R2_BUCKET}/admin/killswitch.json" \
-              --endpoint-url "$ENDPOINT" \
-              --content-type application/json \
-              --cache-control "public, max-age=30, s-maxage=30"
-            echo "Uploaded admin/killswitch.json to ${R2_BUCKET}"
-          fi
+          exit $UPLOAD_FAILED
 
       - name: Commit and push results
+        # always(): a tripped drift monitor (exit 1) must still commit
+        # admin/drift.flag + the run's artifacts. Pre-2026-11-10 it did not.
+        if: always()
         run: |
           git config user.name "helios-bot"
           git config user.email "helios-bot@users.noreply.github.com"

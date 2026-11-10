@@ -33,10 +33,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.bot.genome import genome_to_configs
 from src.engine.regime_vote import VoteConfig, score_matrix
 from src.util.paths import DATA_PROCESSED
+from src.util.session import weekly_signal_friday, week_of_for_signal_friday
 
 RESULTS_EMITTED = Path(__file__).resolve().parents[1] / "results" / "emitted"
 KILLSWITCH_PATH = Path(__file__).resolve().parents[1] / "admin" / "killswitch.json"
 DRIFT_FLAG_PATH = Path(__file__).resolve().parents[1] / "admin" / "drift.flag"
+HISTORY_DIR = RESULTS_EMITTED / "history"
 SCHEMA_VERSION = 1
 HELIOS_VERSION = "0.2.1"
 
@@ -69,6 +71,19 @@ def _last_valid_idx(features: pd.DataFrame) -> int:
     mask = features["wti_close"].notna() & features["wti_atr20"].notna()
     if not mask.any():
         raise SystemExit("No valid trading day in features.")
+    return int(mask[mask].index[-1])
+
+
+def _weekly_signal_idx(features: pd.DataFrame, friday: pd.Timestamp) -> int | None:
+    """Last valid bar on or before the signal Friday, within that Mon-Fri
+    week (Friday holiday -> Thursday). None if the week has no valid bar."""
+    dates = pd.to_datetime(features["date"])
+    if dates.dt.tz is None:
+        dates = dates.dt.tz_localize("UTC")
+    mask = (features["wti_close"].notna() & features["wti_atr20"].notna()
+            & (dates <= friday) & (dates > friday - pd.Timedelta(days=5)))
+    if not mask.any():
+        return None
     return int(mask[mask].index[-1])
 
 
@@ -198,7 +213,8 @@ def _build_call_payload(features: pd.DataFrame, reads: pd.DataFrame,
                         idx: int, vote_cfg, k_stop: float, k_target: float,
                         max_hold: int, candidate_stem: str | None,
                         genome_hash: str | None, shadow_mode: bool,
-                        is_daily: bool) -> dict:
+                        is_daily: bool,
+                        week_override: tuple[str, str] | None = None) -> dict:
     row = reads.iloc[idx]
     latest = features.iloc[idx]
     direction = _direction(row["read"])
@@ -214,7 +230,8 @@ def _build_call_payload(features: pd.DataFrame, reads: pd.DataFrame,
             "as_of": str(pd.Timestamp(row["date"]).date()),
         }
     else:
-        week_of, week_end = _monday_and_sunday(pd.Timestamp(row["date"]))
+        week_of, week_end = (week_override if week_override is not None
+                             else _monday_and_sunday(pd.Timestamp(row["date"])))
         base = {
             "type": "call",
             "week_of": week_of,
@@ -372,17 +389,42 @@ def main() -> int:
               "on weekly + daily per PROTOCOL v0.2.1 compensating control.")
     weekly_shadow = not args.live or drift_active
     daily_shadow = not (args.live and args.daily_live) or drift_active
-    weekly = _build_call_payload(features, reads, idx, vote_cfg,
-                                 k_stop, k_target, max_hold,
-                                 candidate_stem, genome_hash,
-                                 shadow_mode=weekly_shadow, is_daily=False)
+    # Weekly call = validated rule: read on the Friday close, traded in the
+    # following Mon-Sun week. Published once, then FROZEN: if the week's
+    # archive already exists, it is re-served verbatim (never recomputed,
+    # never re-priced). Pre-2026-11-10 the weekly was rebuilt from every
+    # weekday's latest bar and the archive overwritten daily.
+    friday = weekly_signal_friday()
+    week_of, week_end = week_of_for_signal_friday(friday)
+    archived = out_dir / "history" / f"{week_of}-weekly.json"
+    weekly = None
+    if archived.exists():
+        weekly = json.loads(archived.read_text(encoding="utf-8"))
+        print(f"[emit_reads] weekly {week_of} already published "
+              f"{weekly.get('published_utc')} - frozen, re-serving archive.")
+    else:
+        widx = _weekly_signal_idx(features, friday)
+        if widx is None:
+            print(f"[emit_reads] no valid bar for signal week ending {friday.date()}; "
+                  f"weekly/current.json left unchanged.")
+        else:
+            weekly = _build_call_payload(features, reads, widx, vote_cfg,
+                                         k_stop, k_target, max_hold,
+                                         candidate_stem, genome_hash,
+                                         shadow_mode=weekly_shadow, is_daily=False,
+                                         week_override=(week_of, week_end))
+            print(f"[emit_reads] NEW weekly call for week {week_of} "
+                  f"from {pd.Timestamp(features.iloc[widx]['date']).date()} close.")
     daily = _build_call_payload(features, reads, idx, vote_cfg,
                                 k_stop, k_target, max_hold,
                                 candidate_stem, genome_hash,
                                 shadow_mode=daily_shadow, is_daily=True)
 
-    (out_dir / "weekly" / "current.json").write_text(
-        json.dumps(weekly, indent=2), encoding="utf-8")
+    if weekly is not None:
+        (out_dir / "weekly" / "current.json").write_text(
+            json.dumps(weekly, indent=2), encoding="utf-8")
+    else:
+        weekly = json.loads((out_dir / "weekly" / "current.json").read_text(encoding="utf-8"))
     (out_dir / "daily" / "current.json").write_text(
         json.dumps(daily, indent=2), encoding="utf-8")
     print(f"Wrote {out_dir/'weekly'/'current.json'}")

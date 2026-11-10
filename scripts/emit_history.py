@@ -4,8 +4,8 @@ Two responsibilities:
 
 1. **Archive today's weekly call.** If `results/emitted/weekly/current.json`
    is a fresh week (`week_of` not already archived), copy the payload verbatim
-   to `results/emitted/history/{week_of}-weekly.json`. Idempotent — re-runs
-   on the same week no-op.
+   to `results/emitted/history/{week_of}-weekly.json`. The first publish is
+   the call of record; re-runs never overwrite it (frozen since 2026-11-10).
 
 2. **Rebuild the index.** Scan `results/emitted/history/*-weekly.json`,
    assemble the ordered list per Vega's schema, resolve outcomes for
@@ -17,9 +17,8 @@ Output:
     results/emitted/history/{week_of}-weekly.json (one per archived week)
 
 Outcome resolution:
-    Given a weekly call with direction, entry (current_price), stop, target,
-    and max_hold_days, walk forward through daily wti_close values starting
-    from the day after week_of.
+    Backtest-identical grading - see _resolve_outcome docstring. Entry is
+    the first close after the signal bar; only later closes grade the call.
     - If a close crosses target in the profitable direction → outcome = "target"
     - If a close crosses stop in the losing direction → outcome = "stop"
     - Neither in max_hold_days days → outcome = "max_hold", exit at last close
@@ -76,9 +75,8 @@ def _archive_current_weekly() -> str | None:
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
     dest = HISTORY_DIR / f"{week_of}-weekly.json"
     if dest.exists():
-        # already archived; overwrite in case the same week's payload was
-        # re-emitted with a corrected value (idempotent).
-        dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        # Published calls are FROZEN (2026-11-10). Never overwrite an
+        # archived week; the first publish is the call of record.
         return week_of
     dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
     print(f"[emit_history] archived {dest.name}")
@@ -86,72 +84,79 @@ def _archive_current_weekly() -> str | None:
 
 
 def _resolve_outcome(week: dict, prices: pd.DataFrame) -> dict:
-    """Return {net_return_pct, exit_reason} for a resolved week, or None keys
-    if the week is still open."""
+    """Grade a published weekly call exactly like src/sim/backtest.py does.
+
+    Method (locked 2026-11-10, replaces the pre-fix grader):
+      * Signal bar = ``signal_date_utc`` (the close the call was computed on).
+        Only bars strictly AFTER it are used, so nothing known at publish
+        time can grade the call. (Pre-fix grading walked from ``week_of``
+        while the call itself was re-priced daily later in the week, which
+        let already-known closes trigger stops/targets.)
+      * Entry = first valid close after the signal bar (backtest's
+        next-close proxy for next-bar open; Monday close for a Friday call).
+      * Stop / target = entry -/+ ``stop_atr_mult`` / ``target_atr_mult``
+        x ``atr_20d`` from the payload; close-based checks; stop wins a tie.
+      * Window = the ``hold_days_max`` business-day rows after entry.
+      * Resolves as soon as stop/target is hit; otherwise ``max_hold`` once
+        the window has fully elapsed, else still open (None, None).
+      * Return is gross of costs (signed % move entry -> exit).
+    """
+    none = {"net_return_pct": None, "exit_reason": None}
     direction = week.get("direction")
     if direction not in DIRECTIONAL:
-        return {"net_return_pct": None, "exit_reason": None}
-    week_of = week.get("week_of")
-    if not week_of:
-        return {"net_return_pct": None, "exit_reason": None}
-    entry = week.get("current_price")
+        return none
     levels = week.get("levels") or {}
+    atr = week.get("atr_20d")
+    price = week.get("current_price")
+    if atr is None or price is None:
+        return none
+    k_stop = levels.get("stop_atr_mult")
+    k_target = levels.get("target_atr_mult")
+    if k_stop is None or k_target is None:
+        st = levels.get("suggested_stop_price_at_entry")
+        tg = levels.get("suggested_target_price_at_entry")
+        if st is None or tg is None:
+            return none
+        k_stop = abs(float(price) - float(st)) / float(atr)
+        k_target = abs(float(tg) - float(price)) / float(atr)
     max_hold = int(levels.get("hold_days_max") or week.get("max_hold_days") or 11)
-    stop = (levels.get("suggested_stop_price_at_entry")
-            if "suggested_stop_price_at_entry" in levels
-            else levels.get("stop_long_at") or levels.get("stop_short_at"))
-    target = (levels.get("suggested_target_price_at_entry")
-              if "suggested_target_price_at_entry" in levels
-              else levels.get("target_long_at") or levels.get("target_short_at"))
-    if entry is None or stop is None or target is None:
-        return {"net_return_pct": None, "exit_reason": None}
 
-    entry_date = pd.Timestamp(week_of).tz_localize("UTC")
-    is_long = direction in {"LONG", "BUY"}
-    # Prices strictly after entry_date, up to max_hold_days trading days.
-    future = prices[prices["date"] > entry_date].reset_index(drop=True)
-    if future.empty:
-        return {"net_return_pct": None, "exit_reason": None}
-    window = future.head(max_hold)
-    if len(window) < max_hold:
-        # Window not yet complete — week still open.
-        return {"net_return_pct": None, "exit_reason": None}
-    exit_reason = None
-    exit_price = None
+    sig = week.get("signal_date_utc")
+    if sig:
+        sig_ts = pd.Timestamp(sig)
+        sig_ts = sig_ts.tz_localize("UTC") if sig_ts.tzinfo is None else sig_ts.tz_convert("UTC")
+    else:
+        sig_ts = pd.Timestamp(week["week_of"]).tz_localize("UTC") - pd.Timedelta(days=3)
+
+    after = prices[prices["date"] > sig_ts].reset_index(drop=True)
+    valid = after["wti_close"].notna()
+    if not valid.any():
+        return none
+    j0 = int(valid[valid].index[0])
+    entry = float(after.loc[j0, "wti_close"])
+    sgn = 1 if direction in {"LONG", "BUY"} else -1
+    stop = entry - sgn * float(k_stop) * float(atr)
+    target = entry + sgn * float(k_target) * float(atr)
+
+    window = after.iloc[j0 + 1: j0 + 1 + max_hold]
     for _, row in window.iterrows():
         close = row["wti_close"]
         if pd.isna(close):
             continue
-        if is_long:
-            if close >= target:
-                exit_reason = "target"
-                exit_price = float(target)
-                break
-            if close <= stop:
-                exit_reason = "stop"
-                exit_price = float(stop)
-                break
-        else:
-            if close <= target:
-                exit_reason = "target"
-                exit_price = float(target)
-                break
-            if close >= stop:
-                exit_reason = "stop"
-                exit_price = float(stop)
-                break
-    if exit_reason is None:
-        exit_reason = "max_hold"
-        last_close = window["wti_close"].dropna().iloc[-1] if not window["wti_close"].dropna().empty else None
-        if last_close is None:
-            return {"net_return_pct": None, "exit_reason": None}
-        exit_price = float(last_close)
-
-    signed_return = ((exit_price - float(entry)) / float(entry)) * (1 if is_long else -1)
-    return {
-        "net_return_pct": round(signed_return * 100.0, 2),
-        "exit_reason": exit_reason,
-    }
+        hit_stop = sgn * (close - stop) <= 0
+        hit_target = sgn * (close - target) >= 0
+        if hit_stop or hit_target:
+            exit_px = stop if hit_stop else target
+            return {"net_return_pct": round(sgn * (exit_px - entry) / entry * 100.0, 2),
+                    "exit_reason": "stop" if hit_stop else "target"}
+    if len(window) < max_hold:
+        return none
+    closes = window["wti_close"].dropna()
+    if closes.empty:
+        return none
+    exit_px = float(closes.iloc[-1])
+    return {"net_return_pct": round(sgn * (exit_px - entry) / entry * 100.0, 2),
+            "exit_reason": "max_hold"}
 
 
 def _rebuild_index() -> dict:

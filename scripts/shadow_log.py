@@ -37,6 +37,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from src.util.session import last_complete_bar_date, last_weekday_on_or_before
 from src.bot.genome import genome_to_configs
 from src.engine.regime_vote import VoteConfig, score_matrix
 from src.features.build import build_features
@@ -72,7 +73,11 @@ def main() -> int:
     if args.asof:
         target_date = pd.Timestamp(args.asof).tz_localize("UTC")
     else:
-        target_date = pd.Timestamp(datetime.now(timezone.utc).date()).tz_localize("UTC")
+        # Last weekday whose session has closed. A cron that slips past
+        # midnight UTC (Fri 21:00 run landing Sat 00:30) used to request
+        # Saturday and fail the stale guard; one landing Tue 03:00 used to
+        # read an in-progress Tuesday bar. See src/util/session.py.
+        target_date = last_weekday_on_or_before(last_complete_bar_date())
 
     features = build_features()
     features["date"] = pd.to_datetime(features["date"])

@@ -94,6 +94,24 @@ def main() -> int:
             print("[fatal] emit_reads failed")
             return 4
 
+        # Drift check BEFORE the weekly is archived (archive = frozen call of
+        # record). If drift trips, admin/drift.flag is written and we re-emit
+        # immediately so a fresh weekly goes out as SHADOW instead of being
+        # frozen as live. Pre-2026-11-10 the check ran after archiving and the
+        # workflow aborted before committing the flag, so 4 trips
+        # (10-30, 11-03, 11-05, 11-06) never took effect.
+        if args.live:
+            rc = _run([py, "scripts/drift_monitor.py"], "drift_monitor (pre-archive)")
+            if rc != 0:
+                print("[drift] tripped - drift.flag written; re-emitting (forces SHADOW)")
+            # Re-emit unconditionally so the payload reflects the flag state
+            # AFTER this check (set on trip, cleared on pass). Cheap and
+            # deterministic; a frozen weekly is simply re-served.
+            rc = _run(emit_cmd, "emit_reads (post-drift)")
+            if rc != 0:
+                print("[fatal] emit_reads (post-drift) failed")
+                return 4
+
         # Equity curve — only re-emit if candidate is provided (needs a
         # concrete genome + trade_cfg). Cheap; safe to run daily.
         if args.candidate:
