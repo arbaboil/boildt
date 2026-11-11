@@ -558,3 +558,28 @@ scope); check the W47 publish on Sat 2026-11-14 (Friday-close, COT on,
 frozen).
 
 ---
+
+## 2026-11-11 — R2 prod upload check + silent-failure fix
+
+- **First prod upload (11-10 22:30 slot, started 11-11 02:02 UTC):** every
+  PutObject to helios-data-prod got AccessDenied (token scoped to staging
+  only). Staging got the committed files (generated_at_utc
+  2026-11-10T17:14:06Z). The data step had stopped on the stale guard
+  (11-10 prices not yet available), so nothing new was generated.
+- **Silent failure:** the upload loop used `( set -e ... ) || ...`, where
+  bash ignores errexit. It printed "Uploaded" after each denial and the step
+  went green. Fixed in b3aee04: each upload is checked explicitly, uploads
+  continue, the step exits 1 on any failure, and READBACK lines log
+  LastModified + generated_at_utc per bucket/file. Dry-run with a fake aws
+  that denies prod: 7 errors, 7 staging uploads, exit 1.
+- **Owner/Vega 11-11:** the existing token "HELIOS daily cron uploader" now
+  has Object R/W on both buckets (same key). Vega switches
+  NEXT_PUBLIC_HELIOS_TARGET to prod after Helios confirms in writing.
+- The 11-03/05/06 red runs were drift trips (fixed on 11-10 by the σ floor),
+  not upload issues.
+
+**Next:** read the READBACK lines from the first run after b3aee04 (11-11
+22:30 UTC slot, expect 2-4 h slip). Send Vega upload time + generated_at_utc
+per file (summary, curve, killswitch, weekly) for both buckets. If the stale
+guard trips again, report that the prod files are the 11-10 17:14 copies.
+Then check the W47 publish on Sat 11-14.
