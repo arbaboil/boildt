@@ -143,53 +143,50 @@ jobs:
           fi
           pip install --quiet awscli
           ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
-          UPLOAD_FAILED=0
-          for R2_BUCKET in $R2_BUCKETS; do (
-            set -e
+          # Every aws call is checked explicitly. Pre-2026-11-11 the uploads ran
+          # in a `( set -e ... ) || ...` subshell, where bash IGNORES errexit,
+          # so AccessDenied on prod printed "Uploaded" and the step went green.
+          # Now: keep uploading the rest (staging still lands if prod fails),
+          # then exit 1 if anything failed so the run goes red.
+          FAILED=""
+          put() {  # put <src> <bucket> <key> [extra aws args...]
+            local src="$1" bucket="$2" key="$3"; shift 3
+            if aws s3 cp "$src" "s3://${bucket}/${key}" "$@" \
+                 --endpoint-url "$ENDPOINT" \
+                 --content-type application/json \
+                 --cache-control "public, max-age=30, s-maxage=30"; then
+              echo "Uploaded ${key} to ${bucket} at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            else
+              echo "::error::R2 upload FAILED: ${key} -> ${bucket}"
+              FAILED="${FAILED} ${bucket}:${key}"
+            fi
+          }
+          for R2_BUCKET in $R2_BUCKETS; do
             # Emitted call/brief/backtest artifacts + equity curve
             for KEY in weekly/current.json daily/current.json backtest/summary.json backtest/curve.json; do
-              SRC="results/emitted/${KEY}"
-              if [ -f "$SRC" ]; then
-                aws s3 cp "$SRC" "s3://${R2_BUCKET}/${KEY}" \
-                  --endpoint-url "$ENDPOINT" \
-                  --content-type application/json \
-                  --cache-control "public, max-age=30, s-maxage=30"
-                echo "Uploaded ${KEY} to ${R2_BUCKET}"
-              fi
+              [ -f "results/emitted/${KEY}" ] && put "results/emitted/${KEY}" "$R2_BUCKET" "$KEY"
             done
-            # Shadow-strip audit — not a site-rendered artifact, but useful
-            # for Owner/Vega dashboards checking realized vs expected R.
-            if [ -f "results/shadow_audit.json" ]; then
-              aws s3 cp "results/shadow_audit.json" "s3://${R2_BUCKET}/audit/shadow_audit.json" \
-                --endpoint-url "$ENDPOINT" \
-                --content-type application/json \
-                --cache-control "public, max-age=30, s-maxage=30"
-              echo "Uploaded audit/shadow_audit.json to ${R2_BUCKET}"
-            fi
-            # Weekly history — index + per-week snapshots. Recursive upload;
-            # aws s3 cp handles the whole directory in one call.
-            if [ -d "results/emitted/history" ]; then
-              aws s3 cp results/emitted/history/ "s3://${R2_BUCKET}/history/" \
-                --recursive \
-                --endpoint-url "$ENDPOINT" \
-                --content-type application/json \
-                --cache-control "public, max-age=30, s-maxage=30"
-              echo "Uploaded history/ to ${R2_BUCKET}"
-            fi
-            # Kill-switch: uploaded so site-loader can render-time check (per
-            # DEPLOY-PLAN §Site-loader behavior). Owner writes admin/killswitch.json
-            # in the repo; cron mirrors it to R2. Cache TTL matches AXIS convention
-            # (30s) so a flip propagates fast.
-            if [ -f "admin/killswitch.json" ]; then
-              aws s3 cp "admin/killswitch.json" "s3://${R2_BUCKET}/admin/killswitch.json" \
-                --endpoint-url "$ENDPOINT" \
-                --content-type application/json \
-                --cache-control "public, max-age=30, s-maxage=30"
-              echo "Uploaded admin/killswitch.json to ${R2_BUCKET}"
-            fi
-            ) || { echo "::warning::R2 upload to ${R2_BUCKET} failed (token scope?)"; UPLOAD_FAILED=1; }
+            # Shadow-strip audit — not site-rendered; for Owner/Vega dashboards.
+            [ -f results/shadow_audit.json ] && put results/shadow_audit.json "$R2_BUCKET" audit/shadow_audit.json
+            # Weekly history — index + per-week snapshots (recursive).
+            [ -d results/emitted/history ] && put results/emitted/history/ "$R2_BUCKET" history/ --recursive
+            # Kill-switch mirror (30s TTL so a flip propagates fast).
+            [ -f admin/killswitch.json ] && put admin/killswitch.json "$R2_BUCKET" admin/killswitch.json
           done
-          exit $UPLOAD_FAILED
+          # Read-back: LastModified + generated_at_utc as the bucket serves them.
+          for R2_BUCKET in $R2_BUCKETS; do
+            for KEY in backtest/summary.json backtest/curve.json admin/killswitch.json weekly/current.json; do
+              LM=$(aws s3api head-object --bucket "$R2_BUCKET" --key "$KEY" --endpoint-url "$ENDPOINT" \
+                     --query LastModified --output text 2>/dev/null || echo MISSING)
+              GEN=$(aws s3 cp "s3://${R2_BUCKET}/${KEY}" - --endpoint-url "$ENDPOINT" 2>/dev/null \
+                     | grep -o -m1 '"generated_at_utc": *"[^"]*"' || echo "no generated_at_utc")
+              echo "READBACK ${R2_BUCKET}/${KEY} last_modified=${LM} ${GEN}"
+            done
+          done
+          if [ -n "$FAILED" ]; then
+            echo "::error::R2 uploads failed:${FAILED}"
+            exit 1
+          fi
 
       - name: Commit and push results
         # always(): a tripped drift monitor (exit 1) must still commit
