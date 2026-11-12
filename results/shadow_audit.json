@@ -1,21 +1,22 @@
 {
-  "generated_at_utc": "2026-11-10T03:06:57+00:00",
+  "generated_at_utc": "2026-11-12T03:11:59+00:00",
   "candidate": "bot_v3_seed7_candidate",
   "model_expectation": {
-    "val_mean_r_net": 0.918234088394138,
-    "val_wr": 0.3473684210526316,
-    "ho_mean_r_net": 0.7342712383030919,
-    "ho_wr": 0.3148148148148148
+    "val_mean_r_net": 0.9808308584983502,
+    "val_wr": 0.36082474226804123,
+    "ho_mean_r_net": 0.7893742064256525,
+    "ho_wr": 0.3389830508474576
   },
   "shadow_strip": {
-    "n_shadow_days": 24,
+    "n_shadow_days": 25,
     "direction_mix": {
       "BUY": 23,
-      "SELL": 1
+      "SELL": 1,
+      "FLAT": 1
     },
-    "mean_confidence": 0.9060250431364564,
+    "mean_confidence": 0.8740450661945066,
     "first_asof": "2026-09-18",
-    "last_asof": "2026-11-10"
+    "last_asof": "2026-11-11"
   },
   "live_trades": [
     {
@@ -189,14 +190,17 @@
       "max_hold_days": 11,
       "ref_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-11-10",
-        "exit_px": 85.91999816894531,
-        "r": -0.0,
-        "days_held": 1
+        "exit_date": "2026-11-12",
+        "exit_px": 85.66999816894531,
+        "r": 0.10119757201537875,
+        "days_held": 3
       },
       "next_close_entry": {
-        "outcome": "NO_FILL",
-        "r": null
+        "outcome": "OPEN",
+        "exit_date": "2026-11-12",
+        "exit_px": 85.66999816894531,
+        "r": 0.3481198947972877,
+        "days_held": 1
       }
     }
   ],
@@ -219,8 +223,8 @@
     }
   },
   "divergence": {
-    "mean_r_vs_val": -0.6643981972079057,
-    "mean_r_vs_ho": -0.48043534711685965
+    "mean_r_vs_val": -0.7269949673121179,
+    "mean_r_vs_ho": -0.5355383152394202
   },
   "notes": "Mean R is point-estimate on a tiny sample; CI is wide. Treat <5 closed trades as directional-only evidence. True Gate 7 CI requires the full 28-day shadow window."
 }
