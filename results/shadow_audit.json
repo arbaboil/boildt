@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-12T03:11:59+00:00",
+  "generated_at_utc": "2026-11-13T02:45:39+00:00",
   "candidate": "bot_v3_seed7_candidate",
   "model_expectation": {
     "val_mean_r_net": 0.9808308584983502,
@@ -8,15 +8,15 @@
     "ho_wr": 0.3389830508474576
   },
   "shadow_strip": {
-    "n_shadow_days": 25,
+    "n_shadow_days": 26,
     "direction_mix": {
       "BUY": 23,
-      "SELL": 1,
-      "FLAT": 1
+      "FLAT": 2,
+      "SELL": 1
     },
-    "mean_confidence": 0.8740450661945066,
+    "mean_confidence": 0.8445250874788606,
     "first_asof": "2026-09-18",
-    "last_asof": "2026-11-11"
+    "last_asof": "2026-11-12"
   },
   "live_trades": [
     {
@@ -189,27 +189,27 @@
       "target_ref_px": 70.54389119363918,
       "max_hold_days": 11,
       "ref_entry": {
-        "outcome": "OPEN",
+        "outcome": "STOP",
         "exit_date": "2026-11-12",
-        "exit_px": 85.66999816894531,
-        "r": 0.10119757201537875,
+        "exit_px": 88.39041317022625,
+        "r": -1.0,
         "days_held": 3
       },
       "next_close_entry": {
         "outcome": "OPEN",
-        "exit_date": "2026-11-12",
-        "exit_px": 85.66999816894531,
-        "r": 0.3481198947972877,
-        "days_held": 1
+        "exit_date": "2026-11-13",
+        "exit_px": 88.66000366210938,
+        "r": -0.8622052900861055,
+        "days_held": 2
       }
     }
   ],
   "realized_stats": {
     "ref_entry": {
-      "n": 7,
-      "mean_r": 0.2538358911862323,
-      "cum_r": 1.776851238303626,
-      "wr": 0.2857142857142857,
+      "n": 8,
+      "mean_r": 0.09710640478795324,
+      "cum_r": 0.7768512383036259,
+      "wr": 0.25,
       "worst_r": -1.0,
       "best_r": 4.494472130198771
     },
@@ -223,8 +223,8 @@
     }
   },
   "divergence": {
-    "mean_r_vs_val": -0.7269949673121179,
-    "mean_r_vs_ho": -0.5355383152394202
+    "mean_r_vs_val": -0.883724453710397,
+    "mean_r_vs_ho": -0.6922678016376993
   },
   "notes": "Mean R is point-estimate on a tiny sample; CI is wide. Treat <5 closed trades as directional-only evidence. True Gate 7 CI requires the full 28-day shadow window."
 }

@@ -1,0 +1,31 @@
+{
+  "as_of": "2026-11-12",
+  "requested_asof": "2026-11-12",
+  "instrument": "WTI",
+  "engine": "candidate:bot_v3_seed7_candidate",
+  "is_candidate": true,
+  "read": "FLAT",
+  "confidence": 0.10652561958770904,
+  "score": 0.022529921337265106,
+  "coverage": 1.0,
+  "levels": {
+    "ref": 88.73999786376953,
+    "atr20": 2.6625001068115233,
+    "atr_k_stop": 0.7539798569451991,
+    "atr_k_target": 4.692845101573669,
+    "stop_long_at": 86.7325264141192,
+    "target_long_at": 101.23469844795936
+  },
+  "votes": {
+    "trend": 1,
+    "momentum": -1,
+    "vol": 0,
+    "curve": 0,
+    "cot": 1,
+    "eia": 0,
+    "macro": 0
+  },
+  "shadow_only": true,
+  "helios_version": "0.1.0",
+  "logged_at_utc": "2026-11-13T02:45:36+00:00"
+}
