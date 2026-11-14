@@ -1,13 +1,15 @@
 {
-  "checked_at_utc": "2026-11-13T02:45:39+00:00",
+  "checked_at_utc": "2026-11-14T02:36:12+00:00",
   "artifact_checked": "results/emitted/weekly/current.json",
   "history_days": 14,
-  "drift_detected": false,
-  "n_failing_categories": 0,
+  "drift_detected": true,
+  "n_failing_categories": 1,
   "checks": {
     "basic_sanity": [],
     "priceStep_bounds": [],
-    "confidence_outlier": [],
+    "confidence_outlier": [
+      "confidence outlier: today=11 median=92 std=30.3 z=2.67"
+    ],
     "direction_churn": [],
     "coverage": [],
     "provenance": []

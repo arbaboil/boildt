@@ -80,7 +80,17 @@
         "exit_reason": null
       },
       "has_detail": true
+    },
+    {
+      "week_of": "2026-11-16",
+      "week_end": "2026-11-22",
+      "direction": "SHADOW",
+      "outcome": {
+        "net_return_pct": null,
+        "exit_reason": null
+      },
+      "has_detail": true
     }
   ],
-  "generated_at_utc": "2026-11-13T02:45:38+00:00"
+  "generated_at_utc": "2026-11-14T02:36:12+00:00"
 }

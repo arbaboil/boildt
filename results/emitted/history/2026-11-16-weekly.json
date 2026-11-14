@@ -1,0 +1,81 @@
+{
+  "type": "call",
+  "week_of": "2026-11-16",
+  "week_end": "2026-11-22",
+  "schema_version": 1,
+  "instrument": "WTI",
+  "signal_date_utc": "2026-11-13T00:00:00+00:00",
+  "published_utc": "2026-11-14T02:36:11+00:00",
+  "direction": "SHADOW",
+  "shadow_mode": true,
+  "current_price": 88.91999816894531,
+  "atr_20d": 2.4965001220703122,
+  "signal_components": {
+    "trend": {
+      "vote": 1,
+      "weight": 0.6056043325584309,
+      "value": 0.07445862519680599
+    },
+    "momentum": {
+      "vote": -1,
+      "weight": 1.3157410969052088,
+      "value": -0.19633671507971967
+    },
+    "vol": {
+      "vote": 0,
+      "weight": 2.1029564843449426,
+      "value": 0.3081517291531973
+    },
+    "curve": {
+      "vote": 0,
+      "weight": 3.8289714850102854,
+      "value": -0.23878009164376907
+    },
+    "cot": {
+      "vote": 1,
+      "weight": 0.9811580065464809,
+      "value": -2.311974318114988
+    },
+    "eia": {
+      "vote": 0,
+      "weight": 1.1274738072894082,
+      "value": 0.0
+    },
+    "macro": {
+      "vote": 0,
+      "weight": 2.0674861972223137,
+      "value": 0.003908998993203175
+    }
+  },
+  "confidence": 11,
+  "score": 0.022529921337265106,
+  "message": "HELIOS shadow mode \u2014 this call resolves internally, not for member trading.",
+  "primary_risk": {
+    "sentence": "Shadow mode: no live position risk.",
+    "severity": "med",
+    "trigger": null
+  },
+  "provenance": {
+    "candidate": "bot_v3_seed7_candidate",
+    "protocol_version": "0.2.1",
+    "genome_hash": "sha256:46372ef89cf35da35a67cb37fcebd022",
+    "coverage": 1.0,
+    "null_components": [],
+    "helios_version": "0.2.1",
+    "kill_switch_engaged": false,
+    "kill_switch_reason": null,
+    "bounds_violated": false,
+    "bounds_reason": null
+  },
+  "live_pnl_pct": null,
+  "live_updated_utc": null,
+  "outcome": null,
+  "levels": {
+    "stop_atr_mult": 0.7539798569451991,
+    "target_atr_mult": 4.692845101573669,
+    "hold_days_max": 11,
+    "suggested_entry_price": 88.91999816894531,
+    "suggested_stop_price_at_entry": null,
+    "suggested_target_price_at_entry": null
+  }
+}

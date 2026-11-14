@@ -1,7 +1,7 @@
 {
   "type": "backtest_summary",
   "schema_version": 1,
-  "generated_at_utc": "2026-11-13T02:45:37+00:00",
+  "generated_at_utc": "2026-11-14T02:36:11+00:00",
   "candidate": "results\\bots\\bot_v3_seed7_candidate",
   "protocol_version": "0.2.1",
   "slices": {
